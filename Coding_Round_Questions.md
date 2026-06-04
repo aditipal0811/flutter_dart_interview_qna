@@ -1,12 +1,10 @@
-# Coding Round Questions & Answers (For Beginners & Kids!)
+# Coding Round Questions & Answers
 
-Welcome! Below you will find simple Dart solutions for all the coding round questions, along with child-friendly explanations. 
+This document provides optimized Dart solutions for common data structures and algorithms questions, complete with complexity analysis and professional explanations.
 
 ---
 
-## 1. Arrays (Lists of Toys)
-
-An **array** (called a `List` in Dart) is like a row of toy boxes. Each box has a number label (called an **index**), starting from `0`.
+## 1. Arrays
 
 ---
 
@@ -16,30 +14,33 @@ An **array** (called a `List` in Dart) is like a row of toy boxes. Each box has 
 void main() {
   List<int> numbers = [12, 35, 1, 10, 34, 1];
   int? secondLargest = findSecondLargest(numbers);
-  print("The second largest number is: $secondLargest"); // Output: 34
+  print("The second largest element is: $secondLargest"); // Output: 34
 }
 
 int? findSecondLargest(List<int> list) {
-  if (list.length < 2) return null; // We need at least two toys to compare!
+  if (list.length < 2) return null;
 
-  int largest = -999999;
-  int secondLargest = -999999;
+  int largest = -2147483648;
+  int secondLargest = -2147483648;
 
   for (int number in list) {
     if (number > largest) {
-      secondLargest = largest; // Old champion becomes second place
-      largest = number;        // We have a new champion!
+      secondLargest = largest;
+      largest = number;
     } else if (number > secondLargest && number != largest) {
-      secondLargest = number;  // Sneaks into second place
+      secondLargest = number;
     }
   }
 
-  return secondLargest == -999999 ? null : secondLargest;
+  return secondLargest == -2147483648 ? null : secondLargest;
 }
 ```
-**The Magic Analogy:**
-Imagine you are a judge at a tall-building contest. You look at buildings one by one. You keep two sticky notes: "Tallest" and "Second Tallest". When you see a building taller than your "Tallest", you move the old tallest to "Second Tallest" and write the new building on the "Tallest" note.
-- **Remember key:** The runner-up takes the old champion's crown when a new champion arrives!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single-pass linear scan.
+- **Space Complexity:** $O(1)$ - Constant auxiliary memory.
+
+**Algorithmic Logic:**
+We track the largest and second largest elements using two variables. During iteration, if the current element exceeds `largest`, the previous `largest` becomes the `secondLargest`, and `largest` is updated. If the element is smaller than `largest` but greater than `secondLargest`, we update `secondLargest`.
 
 ---
 
@@ -54,15 +55,18 @@ void main() {
 bool isSorted(List<int> list) {
   for (int i = 0; i < list.length - 1; i++) {
     if (list[i] > list[i + 1]) {
-      return false; // Uh-oh, we walked down a step!
+      return false;
     }
   }
-  return true; // We only walked flat or upwards!
+  return true;
 }
 ```
-**The Magic Analogy:**
-Imagine you are walking up a staircase. To go up, each step must be higher than or equal to the step you are standing on. If you ever find a step that goes *down*, the staircase is broken (not sorted)!
-- **Remember key:** Compare each step with the one right after it. No stepping down allowed!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single scan.
+- **Space Complexity:** $O(1)$ - Constant memory.
+
+**Algorithmic Logic:**
+A list is sorted in non-decreasing order if every element is less than or equal to the element directly succeeding it. We perform a linear scan and check if $A[i] > A[i+1]$. If this condition is met at any point, the array is unsorted.
 
 ---
 
@@ -72,26 +76,29 @@ Imagine you are walking up a staircase. To go up, each step must be higher than 
 void main() {
   List<int> numbers = [1, 1, 2, 2, 3, 4, 4];
   int newLength = removeDuplicates(numbers);
-  print("Cleaned list: ${numbers.sublist(0, newLength)}"); // Output: [1, 2, 3, 4]
+  print("Unique array: ${numbers.sublist(0, newLength)}"); // Output: [1, 2, 3, 4]
 }
 
 int removeDuplicates(List<int> list) {
   if (list.isEmpty) return 0;
   
-  int uniqueIndex = 0; // Where the next unique toy goes
+  int uniqueIndex = 0;
   
   for (int i = 1; i < list.length; i++) {
     if (list[i] != list[uniqueIndex]) {
       uniqueIndex++;
-      list[uniqueIndex] = list[i]; // Move the unique toy forward
+      list[uniqueIndex] = list[i];
     }
   }
-  return uniqueIndex + 1; // Number of unique toys
+  return uniqueIndex + 1;
 }
 ```
-**The Magic Analogy:**
-You have a line of kids wearing numbered shirts. Some shirts are duplicates. Since they are sorted, duplicates stand right next to each other. You walk down the line, and whenever you see a kid with a *new* number, you pull them forward to form a clean, duplicate-free line at the front!
-- **Remember key:** Use two markers—one to find new numbers, and one to place them in their new home.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single pass using two pointers.
+- **Space Complexity:** $O(1)$ - In-place modification.
+
+**Algorithmic Logic:**
+Since the array is sorted, duplicates are adjacent. We maintain a pointer `uniqueIndex` representing the write barrier for unique elements. We iterate through the array starting from the second element, and whenever we find an element different from the one at `uniqueIndex`, we increment `uniqueIndex` and copy the element over.
 
 ---
 
@@ -107,9 +114,9 @@ void main() {
 
 List<int> rotateLeft(List<int> list, int d) {
   int n = list.length;
-  d = d % n; // If we rotate a circle fully, it's back to normal!
+  if (n == 0) return list;
+  d = d % n;
   
-  // Magic trick: reverse sections!
   reverse(list, 0, d - 1);
   reverse(list, d, n - 1);
   reverse(list, 0, n - 1);
@@ -118,9 +125,9 @@ List<int> rotateLeft(List<int> list, int d) {
 
 List<int> rotateRight(List<int> list, int d) {
   int n = list.length;
+  if (n == 0) return list;
   d = d % n;
   
-  // Magic trick: reverse sections!
   reverse(list, 0, n - 1);
   reverse(list, 0, d - 1);
   reverse(list, d, n - 1);
@@ -137,9 +144,15 @@ void reverse(List<int> list, int start, int end) {
   }
 }
 ```
-**The Magic Analogy:**
-Imagine a toy train on a circular track. Left rotation by 2 means the first 2 cars get unhooked and moved to the very back of the train. The reversing trick is like flipping the first part, flipping the second part, and then flipping the whole train to magically put them in the right order!
-- **Remember key:** Reversing sections is a shortcut to rotating lists without using extra boxes.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Three reversal operations, each taking linear time.
+- **Space Complexity:** $O(1)$ - In-place reversal.
+
+**Algorithmic Logic:**
+Instead of shifting elements individually or using auxiliary memory, we use the Reversal Algorithm. For left rotation by `D` steps:
+1. Reverse the prefix subarray $0$ to $D-1$.
+2. Reverse the suffix subarray $D$ to $N-1$.
+3. Reverse the entire array.
 
 ---
 
@@ -153,11 +166,10 @@ void main() {
 }
 
 void moveZerosToEnd(List<int> list) {
-  int nonZeroPos = 0; // Where the next non-zero number should sit
+  int nonZeroPos = 0;
   
   for (int i = 0; i < list.length; i++) {
     if (list[i] != 0) {
-      // Swap the non-zero element with the placeholder
       int temp = list[i];
       list[i] = list[nonZeroPos];
       list[nonZeroPos] = temp;
@@ -166,9 +178,12 @@ void moveZerosToEnd(List<int> list) {
   }
 }
 ```
-**The Magic Analogy:**
-Imagine you have a row of boxes. Some have toys (numbers) and some are empty (zeros). You walk along the row. Whenever you see a box with a toy, you swap it with the leftmost empty box you left behind. This pushes all the empty boxes to the end!
-- **Remember key:** Drag all non-zero numbers to the front, and the zeros will automatically get pushed to the back.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single-pass traversal.
+- **Space Complexity:** $O(1)$ - In-place swaps.
+
+**Algorithmic Logic:**
+We track the position of the next non-zero element using `nonZeroPos`. Whenever we encounter a non-zero element during our iteration, we swap it with the element at `nonZeroPos` and increment `nonZeroPos`. All zeros are thus naturally partitioned to the right side of the list.
 
 ---
 
@@ -176,26 +191,26 @@ Imagine you have a row of boxes. Some have toys (numbers) and some are empty (ze
 **Dart Code:**
 ```dart
 void main() {
-  List<int> numbers = [1, 2, 4, 5, 6]; // N is 6, but 3 is missing!
+  List<int> numbers = [1, 2, 4, 5, 6]; // N is 6, 3 is missing
   int missing = findMissingNumber(numbers, 6);
   print("The missing number is: $missing"); // Output: 3
 }
 
 int findMissingNumber(List<int> list, int n) {
-  // Magic math formula for sum of 1 to N
   int expectedSum = (n * (n + 1)) ~/ 2; 
-  
   int actualSum = 0;
   for (int num in list) {
     actualSum += num;
   }
-  
   return expectedSum - actualSum;
 }
 ```
-**The Magic Analogy:**
-Imagine you have a box of 10 crayons, but one is missing. If you know that a full box of crayons always sums up to 55 (1+2+3...+10), you can just add up the crayons you *do* have. If they sum up to 52, you know crayon number 3 (55 - 52) is the one lost under the sofa!
-- **Remember key:** `Expected Sum - Actual Sum = Missing Number`.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Linear sum calculation.
+- **Space Complexity:** $O(1)$ - Constant space.
+
+**Algorithmic Logic:**
+We use the mathematical formula for the sum of the first $N$ natural numbers: $S_n = \frac{N(N+1)}{2}$. By subtracting the actual sum of elements present in the list from the expected mathematical sum, we isolate the missing number.
 
 ---
 
@@ -211,7 +226,7 @@ void main() {
 }
 
 List<int> findUnion(List<int> a, List<int> b) {
-  Set<int> unionSet = {}; // A Set never holds duplicates!
+  Set<int> unionSet = {};
   unionSet.addAll(a);
   unionSet.addAll(b);
   return unionSet.toList();
@@ -223,16 +238,19 @@ List<int> findIntersection(List<int> a, List<int> b) {
   
   for (int item in b) {
     if (setA.contains(item)) {
-      intersectionSet.add(item); // Only items present in both!
+      intersectionSet.add(item);
     }
   }
   return intersectionSet.toList();
 }
 ```
-**The Magic Analogy:**
-- **Union:** You and your friend dump all your toys into one big chest. If you both have the same toy, you only keep one.
-- **Intersection:** You check which toys you *both* own. If you both have a toy, you put it in the "Common Toys" box.
-- **Remember key:** Sets are magic collections that ignore duplicates. Use them for Union and Intersection!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N + M)$ - Linear insertion and hash lookup.
+- **Space Complexity:** $O(N + M)$ - Storing unique items in Set.
+
+**Algorithmic Logic:**
+- **Union:** We leverage the unique property of `Set` structures to eliminate duplicates and merge elements of both arrays.
+- **Intersection:** We convert the first list into a hash set to achieve $O(1)$ lookups. We then iterate through the second list, checking if the elements exist in the hash set to determine common elements.
 
 ---
 
@@ -241,7 +259,7 @@ List<int> findIntersection(List<int> a, List<int> b) {
 ```dart
 void main() {
   List<int> numbers = [-2, 1, -3, 4, -1, 2, 1, -5, 4];
-  print("Max contiguous subarray sum: ${maxSubarraySum(numbers)}"); // Output: 6 (Subarray is [4, -1, 2, 1])
+  print("Max subarray sum: ${maxSubarraySum(numbers)}"); // Output: 6 ([4, -1, 2, 1])
 }
 
 int maxSubarraySum(List<int> list) {
@@ -251,10 +269,7 @@ int maxSubarraySum(List<int> list) {
   int currentSum = list[0];
   
   for (int i = 1; i < list.length; i++) {
-    // Should we add the next number to our streak, or start a new streak?
     currentSum = (list[i] > currentSum + list[i]) ? list[i] : currentSum + list[i];
-    
-    // Update our record-holder
     if (currentSum > maxSoFar) {
       maxSoFar = currentSum;
     }
@@ -262,15 +277,16 @@ int maxSubarraySum(List<int> list) {
   return maxSoFar;
 }
 ```
-**The Magic Analogy:**
-Imagine you are running a course collecting coins (positive numbers) and stepping in mud pits that lose you coins (negative numbers). If you lose so many coins that your pocket is empty (your sum drops below zero), you throw away all history and start collecting coins fresh from the very next step!
-- **Remember key:** If your current streak becomes worse than starting fresh, reset the streak!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single pass.
+- **Space Complexity:** $O(1)$ - Constant auxiliary variables.
+
+**Algorithmic Logic:**
+We keep track of the maximum sum of a contiguous subarray ending at the current index. For each element, we decide whether to add it to the existing subarray sum or start a new subarray sum from the current element. We update the global maximum whenever our local running sum exceeds it.
 
 ---
 
-## 2. Strings (Rows of Letters)
-
-A **string** is like a word spelled with letter blocks placed side-by-side.
+## 2. Strings
 
 ---
 
@@ -297,9 +313,12 @@ String reverseString(String input) {
   return characters.join('');
 }
 ```
-**The Magic Analogy:**
-Imagine a row of letter blocks. You swap the first block with the last block, then the second block with the second-to-last block, and keep moving inward until you meet in the middle. The word is now backward!
-- **Remember key:** Swap outer letters and step inward until you cross paths.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Linear time swap operations.
+- **Space Complexity:** $O(N)$ - Storing character array.
+
+**Algorithmic Logic:**
+We convert the string into a list of characters and apply the two-pointer technique. We swap characters at the `start` and `end` indices, then increment `start` and decrement `end` until they meet.
 
 ---
 
@@ -308,7 +327,6 @@ Imagine a row of letter blocks. You swap the first block with the last block, th
 ```dart
 void main() {
   print("Is 'racecar' a palindrome? ${isPalindrome('racecar')}"); // Output: true
-  print("Is 'hello' a palindrome? ${isPalindrome('hello')}");     // Output: false
 }
 
 bool isPalindrome(String input) {
@@ -317,7 +335,7 @@ bool isPalindrome(String input) {
   
   while (start < end) {
     if (input[start] != input[end]) {
-      return false; // Letters don't match!
+      return false;
     }
     start++;
     end--;
@@ -325,9 +343,12 @@ bool isPalindrome(String input) {
   return true;
 }
 ```
-**The Magic Analogy:**
-A palindrome is a word that reads the same forward and backward, like "RACECAR". You read the first letter and the last letter. If they match, you check the next ones moving inward. If they all match, you have a palindrome!
-- **Remember key:** Compare start and end, moving inward.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Linear check.
+- **Space Complexity:** $O(1)$ - Constant pointers.
+
+**Algorithmic Logic:**
+Using two pointers (one at the beginning and one at the end), we move inwards step-by-step comparing characters. If any mismatch occurs, the string is not a palindrome.
 
 ---
 
@@ -341,20 +362,21 @@ void main() {
 bool isAnagram(String a, String b) {
   if (a.length != b.length) return false;
   
-  // Sort the characters of both words
   List<String> listA = a.split('')..sort();
   List<String> listB = b.split('')..sort();
   
-  // Compare the sorted lists
   for (int i = 0; i < listA.length; i++) {
     if (listA[i] != listB[i]) return false;
   }
   return true;
 }
 ```
-**The Magic Analogy:**
-Imagine you have two piles of letter blocks. If you rearrange both piles alphabetically (sorting them), they should look exactly the same if they were made of the same letters! For example, "silent" and "listen" both sort to "eilnst".
-- **Remember key:** `Sort and Compare`. If they are anagrams, their sorted letters are identical.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N \log N)$ - Dominated by sorting characters.
+- **Space Complexity:** $O(N)$ - Storing sorted lists.
+
+**Algorithmic Logic:**
+An anagram must contain the exact same characters in the exact same frequencies. By sorting the character representation of both strings alphabetically, we align matching characters. If the sorted lists are identical, the strings are anagrams.
 
 ---
 
@@ -363,19 +385,17 @@ Imagine you have two piles of letter blocks. If you rearrange both piles alphabe
 ```dart
 void main() {
   String word = "swiss";
-  print("First non-repeating letter: ${firstNonRepeatingChar(word)}"); // Output: 'w'
+  print("First non-repeating char: ${firstNonRepeatingChar(word)}"); // Output: 'w'
 }
 
 String? firstNonRepeatingChar(String text) {
   Map<String, int> letterCounts = {};
   
-  // Count how many times we see each letter
   for (int i = 0; i < text.length; i++) {
     String char = text[i];
     letterCounts[char] = (letterCounts[char] ?? 0) + 1;
   }
   
-  // Find the first letter in the string that has a count of 1
   for (int i = 0; i < text.length; i++) {
     String char = text[i];
     if (letterCounts[char] == 1) {
@@ -385,9 +405,12 @@ String? firstNonRepeatingChar(String text) {
   return null;
 }
 ```
-**The Magic Analogy:**
-Imagine walking through a classroom of kids. You write down how many times you see each name on a tally board. Then, you walk down the line again from start to end, checking your board. The first name you point to that only has 1 tally mark is your winner!
-- **Remember key:** Count first, then read from the start to find the first single-count character.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Two linear passes (one to populate counts, one to find first single occurrence).
+- **Space Complexity:** $O(k)$ - Where $k$ is the alphabet size, bounded by $O(1)$ for fixed alphabets.
+
+**Algorithmic Logic:**
+We calculate the frequency of each character in a single pass using a hash map. In the second pass, we iterate through the original string and look up frequencies. The first character with a frequency of `1` is returned.
 
 ---
 
@@ -395,7 +418,7 @@ Imagine walking through a classroom of kids. You write down how many times you s
 **Dart Code:**
 ```dart
 void main() {
-  print("Clean: ${removeDuplicateChars('programming')}"); // Output: "progamin"
+  print("Cleaned: ${removeDuplicateChars('programming')}"); // Output: "progamin"
 }
 
 String removeDuplicateChars(String input) {
@@ -406,15 +429,18 @@ String removeDuplicateChars(String input) {
     String char = input[i];
     if (!seen.contains(char)) {
       seen.add(char);
-      result.add(char); // Save it if we haven't seen it yet!
+      result.add(char);
     }
   }
   return result.join('');
 }
 ```
-**The Magic Analogy:**
-You are collecting stamps. Every time you get a letter block, you check your collector's basket. If you don't have it, you add it to the display. If you already have it, you throw it away!
-- **Remember key:** Keep a "Seen" set to check if you've run into this letter before.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Linear insertion and lookup.
+- **Space Complexity:** $O(k)$ - Storing unique characters in Set.
+
+**Algorithmic Logic:**
+We traverse the string while maintaining a `seen` set. For each character, we verify if it is in the set. If it is absent, we record it in both the set and the output list, preventing duplicate preservation.
 
 ---
 
@@ -433,8 +459,6 @@ void countVowelsAndConsonants(String text) {
   
   for (int i = 0; i < text.length; i++) {
     String char = text[i];
-    
-    // Check if it's a letter first
     if (RegExp(r'[a-zA-Z]').hasMatch(char)) {
       if (vowelsList.contains(char)) {
         vowels++;
@@ -446,9 +470,12 @@ void countVowelsAndConsonants(String text) {
   print("Vowels: $vowels, Consonants: $consonants");
 }
 ```
-**The Magic Analogy:**
-You are sorting fruits. Vowels are red apples (A, E, I, O, U) and consonants are green apples. Spaces and punctuation are just leaves that you throw away. You count each type as you sort them.
-- **Remember key:** Use a matching string or set of vowels to quickly check who belongs where.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Linear string iteration.
+- **Space Complexity:** $O(1)$ - Constant counter variables.
+
+**Algorithmic Logic:**
+Iterating over the string, we perform bounds-checking using regex to match alphabetical characters. If a character is alphabetic, we test if it exists within our vowel list to decide whether to increment `vowels` or `consonants`.
 
 ---
 
@@ -463,10 +490,9 @@ void main() {
 String longestCommonPrefix(List<String> words) {
   if (words.isEmpty) return "";
   
-  String prefix = words[0]; // Start by assuming the first word is the match
+  String prefix = words[0];
   
   for (int i = 1; i < words.length; i++) {
-    // Shrink the prefix until it fits the current word
     while (!words[i].startsWith(prefix)) {
       prefix = prefix.substring(0, prefix.length - 1);
       if (prefix.isEmpty) return "";
@@ -475,13 +501,16 @@ String longestCommonPrefix(List<String> words) {
   return prefix;
 }
 ```
-**The Magic Analogy:**
-Imagine three friends: "flower", "flow", and "flight". You write "flower" on a chalkboard. You look at "flow" and erase letters from the end of "flower" until it matches: "flow". Then you look at "flight" and erase letters from the end of "flow" until it matches: "fl". What's left on the board is the common beginning!
-- **Remember key:** Start with the first word, then chop off letters from the end until it fits all other words.
+**Complexity Analysis:**
+- **Time Complexity:** $O(S)$ - Where $S$ is the sum of characters across all strings.
+- **Space Complexity:** $O(1)$ - Modifies search prefix in-place.
+
+**Algorithmic Logic:**
+We initialize our search space by setting the target prefix as the first string in the array. We then iteratively compare the prefix against each subsequent string. If a string does not start with the prefix, we reduce the prefix length from the right until it does, or until the prefix is empty.
 
 ---
 
-### 2.8 Implement atoi() / myAtoi() (String to Integer)
+### 2.8 Implement atoi() / myAtoi()
 **Dart Code:**
 ```dart
 void main() {
@@ -490,13 +519,12 @@ void main() {
 }
 
 int myAtoi(String s) {
-  s = s.trim(); // 1. Clean spaces
+  s = s.trim();
   if (s.isEmpty) return 0;
   
   int sign = 1;
   int index = 0;
   
-  // 2. Check for sign
   if (s[0] == '-') {
     sign = -1;
     index++;
@@ -504,24 +532,21 @@ int myAtoi(String s) {
     index++;
   }
   
-  double result = 0; // Using double to prevent overflow issues during conversion
+  double result = 0;
   
-  // 3. Read numbers
   while (index < s.length) {
     int codeUnit = s.codeUnitAt(index);
-    // Is it a number character between '0' and '9'?
     if (codeUnit >= 48 && codeUnit <= 57) {
-      int digit = codeUnit - 48; // Convert char to actual int
+      int digit = codeUnit - 48;
       result = (result * 10) + digit;
     } else {
-      break; // Stop at first non-digit!
+      break;
     }
     index++;
   }
   
   double finalVal = result * sign;
   
-  // 4. Handle boundaries (32-bit Integer limits)
   int minInt = -2147483648;
   int maxInt = 2147483647;
   if (finalVal < minInt) return minInt;
@@ -530,22 +555,22 @@ int myAtoi(String s) {
   return finalVal.toInt();
 }
 ```
-**The Magic Analogy:**
-You want to read numbers from a text string. First, blow away any empty spaces. Next, check if it starts with a minus sign `-`. Then, read each number digit. To add a digit, multiply your current score by 10 (moving it to the left) and add the new digit!
-- **Remember key:** `result = (result * 10) + digit`.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Linear traversal over numerical tokens.
+- **Space Complexity:** $O(1)$ - Constant helper storage.
+
+**Algorithmic Logic:**
+We discard leading whitespace and determine if the next token is a sign operator (`+` or `-`). Then, we convert the numeric characters to their digital equivalents ($character\_code - 48$). We build the integer iteratively ($result = result \times 10 + digit$) while checking constraints to prevent 32-bit integer overflow.
 
 ---
 
-## 3. Patterns (Drawing with Loop Stamps)
-
-We can draw stars `*` on the screen using loops. Think of loops as repeating stamp machines.
+## 3. Patterns
 
 ---
 
 ### 3.1 Print solid patterns
 **Dart Code:**
 ```dart
-// Solid Square of 4x4
 void main() {
   printSolidSquare(4);
 }
@@ -567,8 +592,9 @@ void printSolidSquare(int size) {
 * * * * 
 * * * * 
 ```
-**The Magic Analogy:**
-Imagine you are tiling a floor. You go row by row, putting a tile in every column space until the grid is full!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ - Nested iteration.
+- **Space Complexity:** $O(N)$ - Row output assembly.
 
 ---
 
@@ -583,11 +609,10 @@ void printHollowSquare(int size) {
   for (int row = 0; row < size; row++) {
     String line = "";
     for (int col = 0; col < size; col++) {
-      // Print star only if it is the boundary
       if (row == 0 || row == size - 1 || col == 0 || col == size - 1) {
         line += "* ";
       } else {
-        line += "  "; // Empty space inside
+        line += "  ";
       }
     }
     print(line);
@@ -602,8 +627,9 @@ void printHollowSquare(int size) {
 *       * 
 * * * * * 
 ```
-**The Magic Analogy:**
-Imagine building a picture frame. You only put wood pieces on the outer edges (first row, last row, first column, last column) and leave the inside open for the picture.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ - Double loop.
+- **Space Complexity:** $O(N)$ - Row output assembly.
 
 ---
 
@@ -631,8 +657,9 @@ void printNumberPattern(int rows) {
 1 2 3 
 1 2 3 4 
 ```
-**The Magic Analogy:**
-For each row, you start writing numbers starting from `1`, going up until you hit the row number you are currently standing on!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ - Nested loops.
+- **Space Complexity:** $O(N)$ - Buffer string.
 
 ---
 
@@ -649,7 +676,7 @@ void printFloydsTriangle(int rows) {
     String line = "";
     for (int col = 1; col <= row; col++) {
       line += "$count ";
-      count++; // Keep counting up!
+      count++;
     }
     print(line);
   }
@@ -662,8 +689,9 @@ void printFloydsTriangle(int rows) {
 4 5 6 
 7 8 9 10 
 ```
-**The Magic Analogy:**
-You write numbers on blocks starting at `1`. For each step you go down, you add one more block to that row, keeping the numbers going up consecutively without ever resetting!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ - Nested iteration.
+- **Space Complexity:** $O(N)$ - Buffer string.
 
 ---
 
@@ -691,8 +719,9 @@ void printInvertedTriangle(int rows) {
 * * 
 * 
 ```
-**The Magic Analogy:**
-You are stacking blocks, starting with a wide base at the top. With each step down, you make the row smaller by one block until you end with just one block at the bottom!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ - Nested iteration.
+- **Space Complexity:** $O(N)$ - Line layout.
 
 ---
 
@@ -704,14 +733,12 @@ void main() {
 }
 
 void printButterfly(int n) {
-  // Upper half
   for (int i = 1; i <= n; i++) {
     String leftStars = "* " * i;
     String spaces = "  " * (2 * (n - i));
     String rightStars = "* " * i;
     print(leftStars + spaces + rightStars);
   }
-  // Lower half
   for (int i = n; i >= 1; i--) {
     String leftStars = "* " * i;
     String spaces = "  " * (2 * (n - i));
@@ -731,8 +758,9 @@ void printButterfly(int n) {
 * *         * * 
 *             * 
 ```
-**The Magic Analogy:**
-Draw left wing stars, add some empty sky space in the middle, then draw right wing stars. Repeat while widening the wings, and then mirror it upside down!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ - Loop multiplication steps.
+- **Space Complexity:** $O(N)$ - Printing buffer.
 
 ---
 
@@ -744,13 +772,11 @@ void main() {
 }
 
 void printDiamond(int n) {
-  // Upper Pyramid
   for (int i = 1; i <= n; i++) {
     String spaces = " " * (n - i);
     String stars = "* " * i;
     print(spaces + stars);
   }
-  // Lower Inverted Pyramid
   for (int i = n - 1; i >= 1; i--) {
     String spaces = " " * (n - i);
     String stars = "* " * i;
@@ -768,14 +794,13 @@ void printDiamond(int n) {
   * * 
    * 
 ```
-**The Magic Analogy:**
-To print a diamond, you draw spaces to push the stars to the middle. Grow the rows of stars, then shrink them back down to a single point!
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ - Rows and spacing operations.
+- **Space Complexity:** $O(N)$ - String memory allocation.
 
 ---
 
-## 4. Maths & Logic (Math Riddles)
-
-Let's solve fun math riddles with code.
+## 4. Maths & Logic
 
 ---
 
@@ -788,20 +813,22 @@ void main() {
 }
 
 bool isPrime(int n) {
-  if (n <= 1) return false; // 1 and under are not prime!
+  if (n <= 1) return false;
   
-  // Check divisors from 2 up to the square root of n
   for (int i = 2; i * i <= n; i++) {
     if (n % i == 0) {
-      return false; // Found a divider, not prime!
+      return false;
     }
   }
-  return true; // No one can divide it except 1 and itself!
+  return true;
 }
 ```
-**The Magic Analogy:**
-A prime number is a very "stubborn" group of candy blocks. If you have 7 candies, you can't divide them into equal piles for your friends unless you give all 7 to one person, or 1 candy to 7 people. You can't make neat piles of 2 or 3!
-- **Remember key:** If any number from 2 to $\sqrt{N}$ can divide the number evenly (`% == 0`), it's not prime.
+**Complexity Analysis:**
+- **Time Complexity:** $O(\sqrt{N})$ - We only iterate up to $\sqrt{N}$.
+- **Space Complexity:** $O(1)$ - Constant workspace variables.
+
+**Algorithmic Logic:**
+A number $N$ is prime if it has no positive divisors other than $1$ and itself. If a factor exists, one of the factors must be less than or equal to $\sqrt{N}$. We check for division using the modulo operator up to this threshold.
 
 ---
 
@@ -821,20 +848,23 @@ void main() {
 int findGCD(int a, int b) {
   while (b != 0) {
     int temp = b;
-    b = a % b; // Keep taking remainder
+    b = a % b;
     a = temp;
   }
   return a;
 }
 
 int findLCM(int a, int b, int gcd) {
-  return (a * b) ~/ gcd; // Using GCD to find LCM easily!
+  return (a * b) ~/ gcd;
 }
 ```
-**The Magic Analogy:**
-- **GCD:** Imagine you have 12 blue cookies and 18 red cookies. The GCD is the biggest size of cookie plates you can use to distribute both kinds of cookies perfectly evenly with zero leftovers! (Here, 6 plates).
-- **LCM:** If one toy train completes a track loop in 12 seconds and another in 18 seconds, the LCM is the exact second they will cross the starting line together again! (36 seconds).
-- **Remember key:** `GCD` can be found by continually dividing the numbers (Euclidean algorithm). `LCM = (A * B) / GCD`.
+**Complexity Analysis:**
+- **Time Complexity:** $O(\log(\min(A, B)))$ - Euclidean algorithm runs in logarithmic time.
+- **Space Complexity:** $O(1)$ - Constant space.
+
+**Algorithmic Logic:**
+- **GCD (Greatest Common Divisor):** We use the Euclidean algorithm which repeatedly replaces $A$ and $B$ with $B$ and $A \pmod B$ respectively until $B$ becomes $0$. The last non-zero value is the GCD.
+- **LCM (Least Common Multiple):** Based on the algebraic relation $A \times B = \text{GCD}(A, B) \times \text{LCM}(A, B)$, we calculate $\text{LCM} = \frac{A \times B}{\text{GCD}}$.
 
 ---
 
@@ -846,7 +876,7 @@ void main() {
 }
 
 bool isNumPalindrome(int n) {
-  if (n < 0) return false; // Negative numbers are not palindromes!
+  if (n < 0) return false;
   
   int original = n;
   int reversed = 0;
@@ -854,15 +884,18 @@ bool isNumPalindrome(int n) {
   while (n > 0) {
     int lastDigit = n % 10;
     reversed = (reversed * 10) + lastDigit;
-    n = n ~/ 10; // Cut off the last digit
+    n = n ~/ 10;
   }
   
   return original == reversed;
 }
 ```
-**The Magic Analogy:**
-You have a number written on blocks: `121`. You pull off the last block (`1`) and put it first, then pull the next block (`2`), building a new number backwards. If the backwards number is exactly the same as the original, it's a palindrome!
-- **Remember key:** Reverse the number using math (`~/ 10` and `% 10`) and compare with the starting number.
+**Complexity Analysis:**
+- **Time Complexity:** $O(\log_{10} N)$ - Number of operations proportional to number of digits in $N$.
+- **Space Complexity:** $O(1)$ - In-place digit reversal.
+
+**Algorithmic Logic:**
+We reverse the digits of the integer mathematically. By using modular arithmetic (`% 10`), we pull the trailing digit, and by integer division (`~/ 10`), we truncate it from the original number. Finally, we verify if the reversed value matches the original input.
 
 ---
 
@@ -889,9 +922,12 @@ bool isArmstrong(int n) {
   return sum == original;
 }
 ```
-**The Magic Analogy:**
-An Armstrong number is a magic number whose digits are super-powered! If you take each digit and multiply it by itself as many times as the number has digits (cubed for a 3-digit number like $1^3 + 5^3 + 3^3$) and add them up, they magically build the original number!
-- **Remember key:** `Sum of (each digit ^ total digits) = original number`.
+**Complexity Analysis:**
+- **Time Complexity:** $O(\log_{10} N)$ - Proportional to number of digits in $N$.
+- **Space Complexity:** $O(1)$ - Storing temporary sum values.
+
+**Algorithmic Logic:**
+An Armstrong number is equal to the sum of its own digits raised to the power of the number of digits. We extract each digit sequentially, raise it to the exponent (number of digits), accumulate the results, and compare the sum to the original integer.
 
 ---
 
@@ -915,9 +951,12 @@ void printFibonacci(int terms) {
   print(result);
 }
 ```
-**The Magic Analogy:**
-Imagine breeding magic rabbits. The first month you have 0, the second 1. From then on, the number of rabbits you have is the sum of the rabbits you had in the last two months combined (0, 1, 1, 2, 3, 5, 8...).
-- **Remember key:** `next = current + previous`.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Linear addition sequences.
+- **Space Complexity:** $O(1)$ - Only stores current and next terms.
+
+**Algorithmic Logic:**
+The sequence starts with $F_0 = 0, F_1 = 1$. Each subsequent element is computed dynamically by adding the two previous numbers ($F_n = F_{n-1} + F_{n-2}$).
 
 ---
 
@@ -925,7 +964,7 @@ Imagine breeding magic rabbits. The first month you have 0, the second 1. From t
 **Dart Code:**
 ```dart
 void main() {
-  print("Digits in 5234: ${countDigits(5234)}"); // Output: 4
+  print("Digits: ${countDigits(5234)}"); // Output: 4
 }
 
 int countDigits(int n) {
@@ -933,14 +972,17 @@ int countDigits(int n) {
   int count = 0;
   while (n > 0) {
     count++;
-    n = n ~/ 10; // Erase the last digit
+    n = n ~/ 10;
   }
   return count;
 }
 ```
-**The Magic Analogy:**
-Imagine you have a stack of dollar bills. Each time you divide by 10, you remove the top bill from the stack. You count how many times you do this until the stack is completely empty!
-- **Remember key:** Keep dividing by 10 (`~/ 10`) until the number hits 0.
+**Complexity Analysis:**
+- **Time Complexity:** $O(\log_{10} N)$ - Linear with respect to the digit count.
+- **Space Complexity:** $O(1)$ - Simple integer counter.
+
+**Algorithmic Logic:**
+We systematically strip off the rightmost digit of the number using integer division (`~/ 10`) until the number reaches `0`. We keep a running counter to track how many times this operation is executed.
 
 ---
 
@@ -961,15 +1003,16 @@ int reverseNumber(int n) {
   return reversed;
 }
 ```
-**The Magic Analogy:**
-To reverse `523`, peel off the last digit `3` (using `% 10`) and start a new number. Then peel off the next digit `2`, multiply the previous part by 10 (`30 + 2 = 32`), and then the last digit `5` (`320 + 5 = 325`).
-- **Remember key:** Use `% 10` to get the last digit, and `~/ 10` to throw it away.
+**Complexity Analysis:**
+- **Time Complexity:** $O(\log_{10} N)$ - Logarithmic time complexity.
+- **Space Complexity:** $O(1)$ - Constant storage.
+
+**Algorithmic Logic:**
+We extract the last digit of the number using `% 10`, append it to the `reversed` value ($reversed \times 10 + digit$), and drop the last digit of the original number with `~/ 10`.
 
 ---
 
-## 5. Recursion (Nesting Dolls)
-
-**Recursion** is when a function calls itself. It is like a Russian nesting doll: inside a big doll is a slightly smaller doll, which contains an even smaller one, until you reach the smallest doll that won't open (called the **base case**).
+## 5. Recursion
 
 ---
 
@@ -977,17 +1020,20 @@ To reverse `523`, peel off the last digit `3` (using `% 10`) and start a new num
 **Dart Code:**
 ```dart
 void main() {
-  print("Factorial of 5: ${factorial(5)}"); // Output: 120 (5 * 4 * 3 * 2 * 1)
+  print("Factorial of 5: ${factorial(5)}"); // Output: 120
 }
 
 int factorial(int n) {
-  if (n <= 1) return 1; // Base case: Smallest doll!
-  return n * factorial(n - 1); // Recursive call
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
 }
 ```
-**The Magic Analogy:**
-To find the factorial of 5, you ask your friend: "Hey, what is the factorial of 4? I will multiply it by 5." Your friend asks their friend for the factorial of 3, all the way down to the kid asked for the factorial of 1, who replies immediately: "It's 1!". The answer then travels back up.
-- **Remember key:** `factorial(n) = n * factorial(n - 1)`. Base case is `n <= 1`.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Linear recursion depth of $N$.
+- **Space Complexity:** $O(N)$ - Space on call stack.
+
+**Algorithmic Logic:**
+We define the recurrence relation: $F(N) = N \times F(N-1)$. The recursion breaks and begins unwinding when it encounters the base case: $N \le 1$, returning $1$.
 
 ---
 
@@ -999,13 +1045,16 @@ void main() {
 }
 
 int fibonacci(int n) {
-  if (n <= 1) return n; // Base case
+  if (n <= 1) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
 }
 ```
-**The Magic Analogy:**
-To find the height of a house, you add the height of the ground floor and the first floor. To find the height of those floors, you ask the smaller sub-floors, all the way down to floor 0 and floor 1 which you already know.
-- **Remember key:** Sum the result of the two previous steps: `fib(n-1) + fib(n-2)`.
+**Complexity Analysis:**
+- **Time Complexity:** $O(2^N)$ - Exponential call tree.
+- **Space Complexity:** $O(N)$ - Recursion call stack height.
+
+**Algorithmic Logic:**
+Calculates the N-th Fibonacci number through branching recursive calls: $F(N) = F(N-1) + F(N-2)$. The base cases are defined at $N = 0$ (returns 0) and $N = 1$ (returns 1).
 
 ---
 
@@ -1018,14 +1067,17 @@ void main() {
 }
 
 bool isPalindromeRec(String s, int start, int end) {
-  if (start >= end) return true; // Base case: Middle reached!
-  if (s[start] != s[end]) return false; // Outer mismatch!
-  return isPalindromeRec(s, start + 1, end - 1); // Check inside
+  if (start >= end) return true;
+  if (s[start] != s[end]) return false;
+  return isPalindromeRec(s, start + 1, end - 1);
 }
 ```
-**The Magic Analogy:**
-Look at the outer letters of "RADAR". 'R' and 'R' match. Peel them off! Now look at the inner part "ADA". Check 'A' and 'A'. Match! Peel them off. Now check 'D'. Since it is just 1 letter left, you are done!
-- **Remember key:** Check outer letters, then recurse on the smaller inner word.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Compares half of the characters.
+- **Space Complexity:** $O(N)$ - Recursion frame stack.
+
+**Algorithmic Logic:**
+We recursively verify string symmetry. In each step, we compare characters at the index pointers `start` and `end`. If they match, we call the function recursively on the internal substring, shifting the boundary pointers inward. The base case is reached when `start >= end`.
 
 ---
 
@@ -1042,27 +1094,19 @@ void printSubsequences(String s, String current, int index) {
     return;
   }
   
-  // Option 1: Choose to include the character
+  // Choice 1: Include current character
   printSubsequences(s, current + s[index], index + 1);
   
-  // Option 2: Choose NOT to include the character
+  // Choice 2: Exclude current character
   printSubsequences(s, current, index + 1);
 }
 ```
-**Output:**
-```
-abc
-ab
-ac
-a
-bc
-b
-c
-{empty}
-```
-**The Magic Analogy:**
-Imagine you are packing snacks for a trip. For each snack in your cabinet (e.g. apple, banana, cookie), you have a simple choice: "Do I put it in my bag, or do I leave it out?" With every choice, you branch into two separate paths!
-- **Remember key:** For every index, make two recursive calls: one *including* the item, and one *excluding* it.
+**Complexity Analysis:**
+- **Time Complexity:** $O(2^N)$ - Double recursive branching at each element.
+- **Space Complexity:** $O(N)$ - Maximum call stack depth.
+
+**Algorithmic Logic:**
+This implements a decision-tree structure. At each index, we branch into two choices: either include the character at `index` in the `current` subsequence or exclude it. When `index` equals the string length, we output the accumulated subsequence.
 
 ---
 
@@ -1078,19 +1122,20 @@ void towerOfHanoi(int n, String source, String destination, String helper) {
     print("Move disk 1 from $source to $destination");
     return;
   }
-  // Move top n-1 disks to helper rod
   towerOfHanoi(n - 1, source, helper, destination);
-  
-  // Move bottom disk to destination rod
   print("Move disk $n from $source to $destination");
-  
-  // Move n-1 disks from helper to destination rod
   towerOfHanoi(n - 1, helper, destination, source);
 }
 ```
-**The Magic Analogy:**
-You have a stack of plastic rings on Pole A. You want to move them all to Pole C, but you can never put a larger ring on top of a smaller ring. You use Pole B as a temporary holding spot. If you want to move 3 rings, you move the top 2 rings to the helper pole, move the biggest ring to the target pole, and then move the 2 rings from the helper pole back on top of the big ring!
-- **Remember key:** Move `n-1` to helper, move bottom disk to destination, move `n-1` from helper to destination.
+**Complexity Analysis:**
+- **Time Complexity:** $O(2^N)$ - Exponential move operations.
+- **Space Complexity:** $O(N)$ - Stack recursion depth.
+
+**Algorithmic Logic:**
+To move $N$ disks from a source rod to a destination rod using an auxiliary (helper) rod:
+1. Recursively move $N-1$ disks from `source` to `helper`.
+2. Move the remaining largest disk directly from `source` to `destination`.
+3. Recursively move the $N-1$ disks from `helper` to `destination`.
 
 ---
 
@@ -1098,7 +1143,7 @@ You have a stack of plastic rings on Pole A. You want to move them all to Pole C
 **Dart Code:**
 ```dart
 void main() {
-  print("Sum of digits of 254: ${sumOfDigits(254)}"); // Output: 11 (2 + 5 + 4)
+  print("Sum: ${sumOfDigits(254)}"); // Output: 11 (2 + 5 + 4)
 }
 
 int sumOfDigits(int n) {
@@ -1106,13 +1151,16 @@ int sumOfDigits(int n) {
   return (n % 10) + sumOfDigits(n ~/ 10);
 }
 ```
-**The Magic Analogy:**
-You are holding a bag of numbers: `254`. You take out the last digit `4`. To find the final sum, you add `4` to whatever the sum of the remaining numbers `25` is!
-- **Remember key:** `Last Digit + sumOfDigits(remaining number)`.
+**Complexity Analysis:**
+- **Time Complexity:** $O(\log_{10} N)$ - Proportional to number of digits in $N$.
+- **Space Complexity:** $O(\log_{10} N)$ - Call stack allocation.
+
+**Algorithmic Logic:**
+We calculate the sum recursively by extracting the last digit of the number using `% 10` and adding it to the result of the recursive call on the truncated number (`n ~/ 10`). The base case returns `0` when the number is completely reduced.
 
 ---
 
-## 6. Basic Data Structures (Toy Organizers)
+## 6. Basic Data Structures
 
 ---
 
@@ -1128,28 +1176,31 @@ void main() {
 }
 
 class Stack {
-  List<int> _storage = [];
+  final List<int> _storage = [];
   
   void push(int value) {
-    _storage.add(value); // Put on top
+    _storage.add(value);
   }
   
   int pop() {
-    if (isEmpty) throw Exception("Stack is empty!");
-    return _storage.removeLast(); // Take off top
+    if (isEmpty) throw StateError("Stack underflow!");
+    return _storage.removeLast();
   }
   
   int peek() {
-    if (isEmpty) throw Exception("Stack is empty!");
-    return _storage.last; // Just look at top
+    if (isEmpty) throw StateError("Stack is empty!");
+    return _storage.last;
   }
   
   bool get isEmpty => _storage.isEmpty;
 }
 ```
-**The Magic Analogy:**
-A stack is like a stack of pancakes. You always add new pancakes to the *top* (push) and you must eat the *top* pancake first (pop). You can't pull one from the middle without causing a mess! Last-In, First-Out (LIFO).
-- **Remember key:** `add()` and `removeLast()` are how you implement a Stack in a List.
+**Complexity Analysis:**
+- **Time Complexity:** $O(1)$ amortized for both push and pop.
+- **Space Complexity:** $O(N)$ - Storage allocations.
+
+**Algorithmic Logic:**
+A Stack follows LIFO (Last-In, First-Out). In Dart, we implement this behavior on top of a dynamic `List` array using the built-in operations `add()` to append to the end (top) and `removeLast()` to pop the top element.
 
 ---
 
@@ -1164,23 +1215,26 @@ void main() {
 }
 
 class Queue {
-  List<int> _storage = [];
+  final List<int> _storage = [];
   
   void enqueue(int value) {
-    _storage.add(value); // Stand at the back of the line
+    _storage.add(value);
   }
   
   int dequeue() {
-    if (isEmpty) throw Exception("Queue is empty!");
-    return _storage.removeAt(0); // First person in line gets served
+    if (isEmpty) throw StateError("Queue underflow!");
+    return _storage.removeAt(0);
   }
   
   bool get isEmpty => _storage.isEmpty;
 }
 ```
-**The Magic Analogy:**
-A queue is like a line of kids waiting for ice cream. The first kid to join the line gets served ice cream first (dequeue), and new kids must stand at the very back of the line (enqueue). First-In, First-Out (FIFO).
-- **Remember key:** `add()` at the end, `removeAt(0)` from the front.
+**Complexity Analysis:**
+- **Time Complexity:** $O(1)$ for enqueue, $O(N)$ for dequeue due to index shifting in list storage.
+- **Space Complexity:** $O(N)$ - Memory capacity.
+
+**Algorithmic Logic:**
+A Queue implements FIFO (First-In, First-Out). We insert (enqueue) at the end of the array using `add()`, and we remove (dequeue) from the beginning using `removeAt(0)`.
 
 ---
 
@@ -1189,7 +1243,6 @@ A queue is like a line of kids waiting for ice cream. The first kid to join the 
 ```dart
 void main() {
   print("Is {()} balanced? ${isBalanced('{()}')}"); // Output: true
-  print("Is {(} balanced? ${isBalanced('{(}')}");   // Output: false
 }
 
 bool isBalanced(String expression) {
@@ -1200,27 +1253,30 @@ bool isBalanced(String expression) {
     String char = expression[i];
     
     if (char == '(' || char == '{' || char == '[') {
-      stack.add(char); // Open bracket: Push to stack
+      stack.add(char);
     } else if (char == ')' || char == '}' || char == ']') {
       if (stack.isEmpty || stack.removeLast() != pairs[char]) {
-        return false; // Mismatched or unmatched closed bracket!
+        return false;
       }
     }
   }
-  return stack.isEmpty; // If stack is empty, everything matches!
+  return stack.isEmpty;
 }
 ```
-**The Magic Analogy:**
-Imagine you are wearing gloves and socks. Every time you put on a left glove/sock (opening bracket), you put its partner on a memory stack. When you take a right glove/sock off (closing bracket), it *must* match the item you put on the stack last.
-- **Remember key:** Match open brackets using a stack. Pop and check on closed brackets.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single scan of string characters.
+- **Space Complexity:** $O(N)$ - Auxiliary stack tracking open brackets.
+
+**Algorithmic Logic:**
+We traverse the expression character-by-character. If we encounter an opening bracket (`(`, `{`, `[`), we push it onto our stack. When we encounter a closing bracket (`)`, `}`, `]`), we pop the top element from the stack and verify if it matches the corresponding opening bracket. If it doesn't match, or if the stack is empty when popped, the expression is unbalanced.
 
 ---
 
-### 6.4 Infix to Postfix conversion
+### 6.4 Infix to Postfix conversion (Shunting-Yard)
 **Dart Code:**
 ```dart
 void main() {
-  print("Postfix of A+B*C: ${infixToPostfix('A+B*C')}"); // Output: ABC*+
+  print("Postfix: ${infixToPostfix('A+B*C')}"); // Output: ABC*+
 }
 
 int getPrecedence(String char) {
@@ -1236,7 +1292,6 @@ String infixToPostfix(String exp) {
   for (int i = 0; i < exp.length; i++) {
     String char = exp[i];
     
-    // If it's a letter/number, add it directly to output
     if (RegExp(r'[a-zA-Z0-9]').hasMatch(char)) {
       result += char;
     } else if (char == '(') {
@@ -1245,9 +1300,8 @@ String infixToPostfix(String exp) {
       while (stack.isNotEmpty && stack.last != '(') {
         result += stack.removeLast();
       }
-      stack.removeLast(); // Remove '('
+      stack.removeLast();
     } else {
-      // Operator found
       while (stack.isNotEmpty && getPrecedence(char) <= getPrecedence(stack.last)) {
         result += stack.removeLast();
       }
@@ -1255,16 +1309,18 @@ String infixToPostfix(String exp) {
     }
   }
   
-  // Empty remaining stack
   while (stack.isNotEmpty) {
     result += stack.removeLast();
   }
   return result;
 }
 ```
-**The Magic Analogy:**
-In normal math, we write operators between numbers (like `A + B`). A computer prefers reading numbers first, then operators (like `A B +`). We use a stack as a "waiting room" for operators. If a stronger operator (like `*`) arrives, it gets priority over a weaker one (like `+`).
-- **Remember key:** Use a stack to hold operators and order them based on their math strength (precedence).
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Linear operations.
+- **Space Complexity:** $O(N)$ - Auxiliary operator stack.
+
+**Algorithmic Logic:**
+We process the expression left-to-right using Dijkstra's Shunting-Yard algorithm. Operands are immediately output, while operators are stored in a stack. When an operator is processed, we pop operators of higher or equal precedence from the stack to the output before pushing the current operator. Parentheses define scope and override precedence rules.
 
 ---
 
@@ -1272,7 +1328,7 @@ In normal math, we write operators between numbers (like `A + B`). A computer pr
 **Dart Code:**
 ```dart
 void main() {
-  print("Result of '231*+9-': ${evaluatePostfix('231*+9-')}"); // Output: -4
+  print("Result: ${evaluatePostfix('231*+9-')}"); // Output: -4
 }
 
 int evaluatePostfix(String exp) {
@@ -1284,7 +1340,6 @@ int evaluatePostfix(String exp) {
     if (RegExp(r'[0-9]').hasMatch(char)) {
       stack.add(int.parse(char));
     } else {
-      // Operator found, pull two numbers to apply the math
       int num2 = stack.removeLast();
       int num1 = stack.removeLast();
       
@@ -1299,13 +1354,16 @@ int evaluatePostfix(String exp) {
   return stack.removeLast();
 }
 ```
-**The Magic Analogy:**
-You read instructions from left to right. When you read a number, you put it on the table. When you read an operator like `+`, you grab the last two numbers you put down, add them together, and place the result back on the table!
-- **Remember key:** Push digits to a stack. Pop 2 operands when you hit an operator, math them, and push the result back.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single linear scan of expression.
+- **Space Complexity:** $O(N)$ - Operand stack storage.
+
+**Algorithmic Logic:**
+We scan the postfix expression left-to-right. We push operands onto a stack. When an operator is encountered, we pop the top two operands from the stack, perform the respective mathematical calculation, and push the result back onto the stack.
 
 ---
 
-## 7. Searching & Sorting (Finding & Organizing Toys)
+## 7. Searching & Sorting
 
 ---
 
@@ -1314,7 +1372,7 @@ You read instructions from left to right. When you read a number, you put it on 
 ```dart
 void main() {
   List<int> numbers = [2, 5, 8, 12, 16, 23, 38, 56, 72];
-  print("Index of 23: ${binarySearch(numbers, 23)}"); // Output: 5
+  print("Index: ${binarySearch(numbers, 23)}"); // Output: 5
 }
 
 int binarySearch(List<int> sortedList, int target) {
@@ -1325,19 +1383,22 @@ int binarySearch(List<int> sortedList, int target) {
     int mid = low + ((high - low) ~/ 2);
     
     if (sortedList[mid] == target) {
-      return mid; // Found it!
+      return mid;
     } else if (sortedList[mid] < target) {
-      low = mid + 1; // Search the right half
+      low = mid + 1;
     } else {
-      high = mid - 1; // Search the left half
+      high = mid - 1;
     }
   }
-  return -1; // Target is not in the list
+  return -1;
 }
 ```
-**The Magic Analogy:**
-Imagine you are looking for a word in a dictionary. Instead of flipping pages one-by-one from the start, you open the book exactly in the middle. If your word starts with a letter further down the alphabet, you tear away the left half of the book and repeat the search in the remaining right half!
-- **Remember key:** List must be sorted. Halve the search space every single step.
+**Complexity Analysis:**
+- **Time Complexity:** $O(\log N)$ - Reduces search space by half each step.
+- **Space Complexity:** $O(1)$ - Iterative pointers.
+
+**Algorithmic Logic:**
+In a sorted array, we define high and low boundaries. We calculate the middle index `mid`. If the middle element matches our target, we return its index. If target is larger than the middle element, we adjust the `low` pointer. Otherwise, we adjust the `high` pointer.
 
 ---
 
@@ -1346,21 +1407,24 @@ Imagine you are looking for a word in a dictionary. Instead of flipping pages on
 ```dart
 void main() {
   List<int> numbers = [5, 3, 8, 2, 9];
-  print("Index of 2: ${linearSearch(numbers, 2)}"); // Output: 3
+  print("Index: ${linearSearch(numbers, 2)}"); // Output: 3
 }
 
 int linearSearch(List<int> list, int target) {
   for (int i = 0; i < list.length; i++) {
     if (list[i] == target) {
-      return i; // Found it!
+      return i;
     }
   }
   return -1;
 }
 ```
-**The Magic Analogy:**
-You lost your favorite lego brick. You look through your toy drawer by picking up every single brick one-by-one from the front to the back until you find the matching one!
-- **Remember key:** Go element-by-element from index `0` to the end.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Checks each element in sequence.
+- **Space Complexity:** $O(1)$ - No helper storage.
+
+**Algorithmic Logic:**
+We iterate sequentially through the elements of the list, comparing each element with the target value. We return the index if a match is found; otherwise, we return `-1`.
 
 ---
 
@@ -1378,7 +1442,6 @@ void bubbleSort(List<int> list) {
   for (int i = 0; i < n - 1; i++) {
     for (int j = 0; j < n - i - 1; j++) {
       if (list[j] > list[j + 1]) {
-        // Swap adjacent elements
         int temp = list[j];
         list[j] = list[j + 1];
         list[j + 1] = temp;
@@ -1387,9 +1450,12 @@ void bubbleSort(List<int> list) {
   }
 }
 ```
-**The Magic Analogy:**
-Imagine water bubbles rising in a glass. The largest bubbles are the heaviest/biggest numbers. You compare two side-by-side numbers, and swap them if the left one is larger than the right one. This pushes the largest number all the way to the end on each pass!
-- **Remember key:** Compare neighbors and swap. The biggest number "bubbles" to the end on each round.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ - Average and worst-case comparison passes.
+- **Space Complexity:** $O(1)$ - Constant space in-place sorting.
+
+**Algorithmic Logic:**
+We iteratively traverse the array from start to end, comparing adjacent elements. If the left element is larger than the right element, they are swapped. In each full pass, the largest unsorted element is placed at its correct sorted index.
 
 ---
 
@@ -1408,19 +1474,21 @@ void selectionSort(List<int> list) {
     int minIndex = i;
     for (int j = i + 1; j < n; j++) {
       if (list[j] < list[minIndex]) {
-        minIndex = j; // Keep track of the absolute smallest
+        minIndex = j;
       }
     }
-    // Swap the smallest item with the first unsorted item
     int temp = list[minIndex];
     list[minIndex] = list[i];
     list[i] = temp;
   }
 }
 ```
-**The Magic Analogy:**
-You are sorting crayons. You scan the entire pile, find the absolute shortest crayon, and swap it with the crayon at the very start of the pile. Then you scan the rest, find the next shortest, and swap it to the second spot.
-- **Remember key:** Search for the minimum value in the unsorted section and place it at the front.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ - Compares all elements to find minimum values.
+- **Space Complexity:** $O(1)$ - In-place swaps.
+
+**Algorithmic Logic:**
+We divide the array into sorted and unsorted regions. In each iteration, we locate the minimum element in the unsorted region and swap it with the first element of the unsorted region, extending the sorted boundary by one.
 
 ---
 
@@ -1438,18 +1506,20 @@ void insertionSort(List<int> list) {
     int key = list[i];
     int j = i - 1;
     
-    // Move elements that are greater than key to one position ahead
     while (j >= 0 && list[j] > key) {
       list[j + 1] = list[j];
       j--;
     }
-    list[j + 1] = key; // Place the card in its correct spot
+    list[j + 1] = key;
   }
 }
 ```
-**The Magic Analogy:**
-Imagine you are playing cards. You hold a sorted hand. You draw a new card. You look at it, then slide it backwards past your larger cards until it fits in its perfect place!
-- **Remember key:** Take the next item and insert it backward into its sorted position.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N^2)$ in worst case, $O(N)$ when array is already sorted.
+- **Space Complexity:** $O(1)$ - In-place shifting.
+
+**Algorithmic Logic:**
+We traverse from index `1` to `N-1`. We store the current element as `key` and shift all sorted elements that are greater than `key` one position to their right. We then insert the `key` into its correct sorted location.
 
 ---
 
@@ -1485,15 +1555,20 @@ List<int> merge(List<int> left, List<int> right) {
     }
   }
   
-  // Add remaining items
   result.addAll(left.sublist(i));
   result.addAll(right.sublist(j));
   return result;
 }
 ```
-**The Magic Analogy:**
-You have a messy pile of homework sheets. You split the pile into two. You give each pile to a friend to sort. Once they return the two sorted piles, you combine (merge) them by comparing the top sheet of each pile, taking the smaller one, and stacking it in the final pile!
-- **Remember key:** Divide the list in half, sort recursively, and merge the sorted halves.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N \log N)$ - Consistently splits and merges list structures.
+- **Space Complexity:** $O(N)$ - Auxiliary arrays for merging.
+
+**Algorithmic Logic:**
+Merge Sort uses divide-and-conquer strategy:
+1. Divide the unsorted array in half.
+2. Recursively sort both sub-arrays.
+3. Merge (combine) the two sorted sub-arrays back into a single sorted array by comparing front elements.
 
 ---
 
@@ -1509,27 +1584,23 @@ void main() {
 void quickSort(List<int> list, int low, int high) {
   if (low < high) {
     int pivotIndex = partition(list, low, high);
-    
-    // Sort items before and after pivot
     quickSort(list, low, pivotIndex - 1);
     quickSort(list, pivotIndex + 1, high);
   }
 }
 
 int partition(List<int> list, int low, int high) {
-  int pivot = list[high]; // Choose the last element as the pivot
-  int i = low - 1; // Index of smaller element
+  int pivot = list[high];
+  int i = low - 1;
   
   for (int j = low; j < high; j++) {
     if (list[j] < pivot) {
       i++;
-      // Swap list[i] and list[j]
       int temp = list[i];
       list[i] = list[j];
       list[j] = temp;
     }
   }
-  // Place pivot in the correct position
   int temp = list[i + 1];
   list[i + 1] = list[high];
   list[high] = temp;
@@ -1537,13 +1608,16 @@ int partition(List<int> list, int low, int high) {
   return i + 1;
 }
 ```
-**The Magic Analogy:**
-Pick a single kid in the class to be the "pivot" (say, the kid at the end of the line). Tell everyone who is shorter than the pivot to stand on the left side of the room, and everyone who is taller to stand on the right side. The pivot kid stands in the middle. Now do the same for the left group and the right group!
-- **Remember key:** Partition items around a pivot so smaller go left, larger go right, then sort recursively.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N \log N)$ average-case, $O(N^2)$ worst-case (if arrays are already sorted and pivot selection is poor).
+- **Space Complexity:** $O(\log N)$ - Average height of call stack frames.
+
+**Algorithmic Logic:**
+We select an element as a pivot (e.g. the last element). We partition the array so that all elements smaller than the pivot are placed to its left, and all elements larger than the pivot are placed to its right. We then recursively apply Quick Sort on the left and right subarrays.
 
 ---
 
-## 8. Important Problem Solving (Riddles for Smart Brains)
+## 8. Important Problem Solving
 
 ---
 
@@ -1552,11 +1626,11 @@ Pick a single kid in the class to be the "pivot" (say, the kid at the end of the
 ```dart
 void main() {
   List<int> numbers = [2, 7, 11, 15];
-  print("Indices of sum: ${twoSum(numbers, 9)}"); // Output: [0, 1]
+  print("Indices: ${twoSum(numbers, 9)}"); // Output: [0, 1]
 }
 
 List<int> twoSum(List<int> list, int target) {
-  Map<int, int> numMap = {}; // Map of value to its index
+  Map<int, int> numMap = {};
   
   for (int i = 0; i < list.length; i++) {
     int complement = target - list[i];
@@ -1568,9 +1642,12 @@ List<int> twoSum(List<int> list, int target) {
   return [];
 }
 ```
-**The Magic Analogy:**
-You are holding a target card `9`. You look at your first number block `2`. You need a `7` to reach your goal (`9 - 2 = 7`). You check your magic board: "Do I have a 7 yet?" No. So you write "I saw a 2 at index 0" on your board and move to the next number. When you see `7`, you check the board, see `2` is already there, and win!
-- **Remember key:** `Complement = target - current`. Store seen values in a map.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single scan with $O(1)$ hash lookups.
+- **Space Complexity:** $O(N)$ - Storage for seen elements.
+
+**Algorithmic Logic:**
+We use a hash map to map values to their indices. For each element, we check if the difference ($target - current\_value$) is present in the map. If it is present, we return its index along with the current index. Otherwise, we add the current value and its index to the map.
 
 ---
 
@@ -1579,23 +1656,26 @@ You are holding a target card `9`. You look at your first number block `2`. You 
 ```dart
 void main() {
   List<int> numbers = [1, 4, 45, 6, 10, 8];
-  print("Has pair? ${hasPairWithSum(numbers, 16)}"); // Output: true (6 + 10)
+  print("Has pair? ${hasPairWithSum(numbers, 16)}"); // Output: true
 }
 
 bool hasPairWithSum(List<int> list, int sum) {
   Set<int> seen = {};
   for (int num in list) {
     if (seen.contains(sum - num)) {
-      return true; // Found a pair!
+      return true;
     }
     seen.add(num);
   }
   return false;
 }
 ```
-**The Magic Analogy:**
-Similar to Two Sum, but instead of remembering indices, you just need a yes/no! You walk along dropping numbers in a basket. Before you put a new number in, you check if the number you *need* to complete the sum is already in the basket.
-- **Remember key:** Look for `sum - current` in the set of previously seen numbers.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single pass hash lookup.
+- **Space Complexity:** $O(N)$ - Storing processed elements.
+
+**Algorithmic Logic:**
+We iterate through the array, storing visited elements in a hash set. For each element, we check if the target difference ($sum - current\_element$) has already been registered in our set. If so, a pair exists.
 
 ---
 
@@ -1611,7 +1691,6 @@ int? findMajority(List<int> list) {
   int? candidate;
   int count = 0;
   
-  // Step 1: Find candidate
   for (int num in list) {
     if (count == 0) {
       candidate = num;
@@ -1623,7 +1702,6 @@ int? findMajority(List<int> list) {
     }
   }
   
-  // Step 2: Verify candidate
   int verificationCount = 0;
   for (int num in list) {
     if (num == candidate) verificationCount++;
@@ -1632,9 +1710,12 @@ int? findMajority(List<int> list) {
   return (verificationCount > list.length / 2) ? candidate : null;
 }
 ```
-**The Magic Analogy:**
-Imagine an arena where different numbers are teams fighting. If two players of the same team meet, they team up (count grows). If they meet an enemy player from a different team, they knock each other out (count shrinks). The team that has more members than all other teams combined will have at least one player left standing in the end!
-- **Remember key:** Boyer-Moore Voting algorithm cancels out different elements.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Two linear sweeps.
+- **Space Complexity:** $O(1)$ - Constant space variables.
+
+**Algorithmic Logic:**
+Using the Boyer-Moore Voting Algorithm, we keep a `candidate` and a `count` variable. We traverse the array; if the count reaches $0$, we set the current element as the candidate and set the count to $1$. If the current element matches the candidate, we increment count; otherwise, we decrement count. Finally, we verify that the candidate appears more than $\lfloor N/2 \rfloor$ times.
 
 ---
 
@@ -1651,21 +1732,23 @@ List<int> findLeaders(List<int> list) {
   if (list.isEmpty) return leaders;
   
   int maxFromRight = list.last;
-  leaders.add(maxFromRight); // Rightmost is always a leader
+  leaders.add(maxFromRight);
   
-  // Walk backward
   for (int i = list.length - 2; i >= 0; i--) {
     if (list[i] > maxFromRight) {
       maxFromRight = list[i];
       leaders.add(maxFromRight);
     }
   }
-  return leaders.reversed.toList(); // Reverse to keep original order
+  return leaders.reversed.toList();
 }
 ```
-**The Magic Analogy:**
-Imagine a row of people looking out at the ocean on their right. A person is a "leader" if they are taller than *everyone* standing to their right, so they have a clear view of the water. If you look from right to left, you only add a leader if they are taller than the tallest person you have seen so far!
-- **Remember key:** Scan from right to left, keeping track of the maximum value.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single backward sweep.
+- **Space Complexity:** $O(1)$ - Constant variables, excluding space for output list.
+
+**Algorithmic Logic:**
+An element is a leader if it is greater than all elements to its right. We scan the array backward starting from the last element (which is always a leader) while maintaining the maximum element encountered so far. If the current element is greater than this maximum, it is identified as a leader.
 
 ---
 
@@ -1706,9 +1789,12 @@ int trapWater(List<int> heights) {
   return totalWater;
 }
 ```
-**The Magic Analogy:**
-Imagine building columns of blocks, leaving gaps between them. When it rains, water gets trapped in the valleys. The amount of water on top of any block depends on the shorter of the tallest walls to its left and right. We use two runners starting at both ends, moving inward to calculate this height!
-- **Remember key:** Two pointers. Calculate water level at the current block based on the lower boundary height.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Single pass using two pointers.
+- **Space Complexity:** $O(1)$ - Constant space variables.
+
+**Algorithmic Logic:**
+Using two pointers (`left` and `right`), we move inward. The volume of water trapped over any building is bounded by the lower of the maximum heights seen on the left and right sides. We evaluate the smaller of `heights[left]` and `heights[right]`, tracking `leftMax` and `rightMax` updates.
 
 ---
 
@@ -1719,7 +1805,7 @@ import 'dart:collection';
 
 void main() {
   List<int> numbers = [1, 3, -1, -3, 5, 3, 6, 7];
-  print("Max in sliding window of size 3: ${maxSlidingWindow(numbers, 3)}");
+  print("Max in sliding window (k=3): ${maxSlidingWindow(numbers, 3)}");
   // Output: [3, 3, 5, 5, 6, 7]
 }
 
@@ -1727,24 +1813,19 @@ List<int> maxSlidingWindow(List<int> nums, int k) {
   List<int> result = [];
   if (nums.isEmpty || k <= 0) return result;
   
-  // Double-ended queue storing indices
   DoubleLinkedQueue<int> deque = DoubleLinkedQueue<int>();
   
   for (int i = 0; i < nums.length; i++) {
-    // 1. Remove indices outside the window bounds
     if (deque.isNotEmpty && deque.first == i - k) {
       deque.removeFirst();
     }
     
-    // 2. Remove smaller elements from the back (they won't be needed)
     while (deque.isNotEmpty && nums[deque.last] < nums[i]) {
       deque.removeLast();
     }
     
-    // 3. Add current index to deque
     deque.addLast(i);
     
-    // 4. If window size is reached, add max to result
     if (i >= k - 1) {
       result.add(nums[deque.first]);
     }
@@ -1752,6 +1833,9 @@ List<int> maxSlidingWindow(List<int> nums, int k) {
   return result;
 }
 ```
-**The Magic Analogy:**
-You are holding a cardboard frame of size 3. You slide it over a row of numbers. To quickly know the largest number inside the frame, you keep a "Leaderboard" (deque). Every time you slide the frame to include a new number, you kick off the leaderboard any older, smaller numbers that have no chance of winning anymore. The number at the front of your leaderboard is always the winner for that frame!
-- **Remember key:** Use a Deque of indices to keep elements sorted inside the active sliding window.
+**Complexity Analysis:**
+- **Time Complexity:** $O(N)$ - Every element is added and removed from the double-ended queue at most once.
+- **Space Complexity:** $O(k)$ - The deque size is bounded by window size $k$.
+
+**Algorithmic Logic:**
+We use a monotonic double-ended queue (deque) to store indices of array elements. As we slide the window, we pop indices that fall outside the window's left boundary. We also pop indices from the back of the deque if their corresponding values are less than the incoming element, keeping the deque sorted in descending order of values. The front of the deque always represents the maximum element of the active window.
