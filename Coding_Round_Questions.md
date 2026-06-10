@@ -2,19 +2,68 @@
 
 Use this file to prepare for coding interviews. For every question, remember this speaking format:
 
-1. Tell the brute force idea if needed.
-2. Tell the optimized idea.
-3. Explain the loop/pointers/data structure.
-4. Give time and space complexity.
+1. **Understand** the problem with examples
+2. **Visualize** how your approach works step-by-step
+3. **Code** it with clear logic
+4. **Optimize** if needed
+5. **Discuss** time and space complexity
+
+---
+
+## Table of Contents
+1. [Arrays](#1-arrays)
+2. [Strings](#2-strings)
+3. [Linked Lists](#3-linked-lists)
+4. [Trees & Binary Search Trees](#4-trees--binary-search-trees)
+5. [Pattern Questions](#5-pattern-questions)
+6. [Number Problems](#6-number-problems)
+7. [Recursion](#7-recursion)
+8. [Dynamic Programming](#8-dynamic-programming)
+9. [Stack & Queue](#9-stack--queue)
+10. [Searching & Sorting](#10-searching--sorting)
+11. [Common Interview Problems](#11-common-interview-problems)
 
 ---
 
 ## 1. Arrays
 
 ### 1.1 Find the second largest element in an array
-**Idea:** Keep two variables: `largest` and `secondLargest`.
 
-**Dart code:**
+**Problem Statement:**
+Given an array of integers, find the second largest element. Return `null` if array has fewer than 2 elements.
+
+**Examples:**
+```
+Input: [10, 20, 50, 30, 40]
+Output: 40 (largest is 50, second largest is 40)
+
+Input: [5, 5, 5, 5]
+Output: 5
+
+Input: [1]
+Output: null
+```
+
+**Approach:**
+- Use two variables: `largest` and `second`
+- Scan array once
+- When you find a new largest, push the old largest to second
+- Update largest with the new value
+
+**Visual Walkthrough:**
+```
+Array: [10, 20, 50, 30, 40]
+
+Step 1: num=10  → largest=10, second=null
+Step 2: num=20  → 20 > 10 → second=10, largest=20
+Step 3: num=50  → 50 > 20 → second=20, largest=50
+Step 4: num=30  → 30 < 50 but 30 > 20 → second=30
+Step 5: num=40  → 40 < 50 but 40 > 30 → second=40
+
+Output: 40 ✓
+```
+
+**Dart Code:**
 ```dart
 int? secondLargest(List<int> nums) {
   if (nums.length < 2) return null;
@@ -24,9 +73,11 @@ int? secondLargest(List<int> nums) {
 
   for (final num in nums) {
     if (largest == null || num > largest) {
-      second = largest;
-      largest = num;
+      second = largest;      // Old largest becomes second
+      largest = num;         // Update to new largest
     } else if (num != largest && (second == null || num > second)) {
+      // Only update second if num is different from largest
+      // and it's bigger than current second
       second = num;
     }
   }
@@ -35,76 +86,200 @@ int? secondLargest(List<int> nums) {
 }
 ```
 
-**Explain in interview:** I scan the array once. Whenever I find a new largest value, the old largest becomes second largest. If a value is smaller than largest but bigger than second largest, I update second largest.
+**Key Points to Explain in Interview:**
+- "I avoid duplicates by checking `num != largest`"
+- "Single pass means O(n) time"
+- "Only 2 variables needed, so O(1) space"
 
-**Complexity:** Time `O(n)`, Space `O(1)`.
+**Complexity:** Time `O(n)`, Space `O(1)`
+
+**Practice Questions:**
+1. Find the **third largest** element
+2. Find the **largest and second largest** (return both)
+3. Find the second largest **without sorting**
+4. Handle **negative numbers** and **duplicates**
+
+**Common Mistakes:**
+- ❌ Sorting the array (wastes time: O(n log n))
+- ❌ Not handling case where all elements are same
+- ❌ Using `>=` instead of `>` (causes duplicates issue)
+
+---
 
 ### 1.2 Check if the array is sorted
-**Idea:** Every element should be less than or equal to the next element.
 
+**Problem Statement:**
+Determine if an array is sorted in ascending order.
+
+**Examples:**
+```
+Input: [1, 2, 3, 4, 5]
+Output: true
+
+Input: [1, 3, 2, 4]
+Output: false (3 comes before 2, breaks order)
+
+Input: [5, 5, 5]
+Output: true (equal elements are allowed)
+```
+
+**Approach:**
+- Compare each element with its next element
+- If any element is greater than next, return false immediately
+- If loop completes, return true
+
+**Visual Walkthrough:**
+```
+Array: [1, 2, 4, 3, 5]
+
+Compare: 1 <= 2? YES
+Compare: 2 <= 4? YES
+Compare: 4 <= 3? NO → Return false ✓
+```
+
+**Dart Code:**
 ```dart
 bool isSorted(List<int> nums) {
   for (int i = 0; i < nums.length - 1; i++) {
-    if (nums[i] > nums[i + 1]) return false;
+    if (nums[i] > nums[i + 1]) {
+      return false;  // Found unsorted pair, return immediately
+    }
   }
-  return true;
+  return true;  // All pairs are in order
 }
 ```
 
-**Explain:** I compare every pair of neighbors. If any previous element is greater than the next element, the array is not sorted.
+**Complexity:** Time `O(n)`, Space `O(1)`
 
-**Complexity:** Time `O(n)`, Space `O(1)`.
+**Practice Questions:**
+1. Check if sorted in **descending** order
+2. Check if sorted in **ascending OR descending** order
+3. Check if sorted **in any rotated state**
+4. **Count inversions** (pairs where larger comes before smaller)
+
+**Common Mistakes:**
+- ❌ Loop goes to `nums.length` (causes index out of bounds)
+- ❌ Using `<` instead of `<=` (misses duplicate check)
+
+---
 
 ### 1.3 Remove duplicates from a sorted array
-**Idea:** Since the array is sorted, duplicates are side by side. Use one pointer to write unique values.
 
+**Problem Statement:**
+Remove duplicate elements from a sorted array **in-place**. Return the count of unique elements.
+
+**Example:**
+```
+Input: [1, 1, 2, 2, 2, 3, 4, 4]
+Output: 5
+Modified array: [1, 2, 3, 4, _, _, _, _] (first 5 elements are unique)
+
+The underscore represents "don't care" values
+```
+
+**Approach (Two Pointer):**
+- `read` pointer scans the entire array
+- `write` pointer marks position for next unique element
+- Only write when we find a different value
+
+**Visual Walkthrough:**
+```
+Array: [1, 1, 2, 2, 3]
+
+Initial: write=1 (start from position 1)
+
+i=1, read=1: nums[1]=1, nums[0]=1 → Same, skip
+i=2, read=2: nums[2]=2, nums[0]=1 → Different! Write at write=1
+            write++, so write=2
+i=3, read=3: nums[3]=2, nums[1]=2 → Same, skip
+i=4, read=4: nums[4]=3, nums[1]=2 → Different! Write at write=2
+            write++, so write=3
+
+Return: 3
+Array: [1, 2, 3, _, _]
+```
+
+**Dart Code:**
 ```dart
 int removeDuplicates(List<int> nums) {
   if (nums.isEmpty) return 0;
 
-  int write = 1;
+  int write = 1;  // Position to write next unique element
+  
   for (int read = 1; read < nums.length; read++) {
+    // Compare current element with last written element
     if (nums[read] != nums[write - 1]) {
-      nums[write] = nums[read];
+      nums[write] = nums[read];  // Write unique element
       write++;
     }
   }
-  return write;
+  
+  return write;  // Count of unique elements
 }
 ```
 
-**Explain:** `read` scans the array. `write` stores the next unique value position. At the end, the first `write` elements are unique.
+**Complexity:** Time `O(n)`, Space `O(1)` (in-place)
 
-**Complexity:** Time `O(n)`, Space `O(1)`.
+**Practice Questions:**
+1. Remove duplicates allowing **at most 2 occurrences**
+2. Remove duplicates and **return the modified array**
+3. Remove duplicates **without modifying** the array (return new list)
+4. **Count the number of duplicates**
 
-### 1.4 Left rotate / Right rotate an array by D elements
-**Idea:** Normalize `d` using modulo, then use slicing for easy interview code.
+**Common Mistakes:**
+- ❌ Creating a new array (violates in-place requirement)
+- ❌ Using `nums[read] != nums[read-1]` (doesn't work correctly)
+- ❌ Not returning the count
 
-```dart
-List<int> rotateLeft(List<int> nums, int d) {
-  if (nums.isEmpty) return nums;
-  d = d % nums.length;
-  return [...nums.sublist(d), ...nums.sublist(0, d)];
-}
+---
 
-List<int> rotateRight(List<int> nums, int d) {
-  if (nums.isEmpty) return nums;
-  d = d % nums.length;
-  return [...nums.sublist(nums.length - d), ...nums.sublist(0, nums.length - d)];
-}
+### 1.4 Move all zeros to the end
+
+**Problem Statement:**
+Move all zeros to the end of array while keeping order of non-zero elements. Modify in-place.
+
+**Example:**
+```
+Input: [0, 1, 0, 3, 12]
+Output: [1, 3, 12, 0, 0]
+
+Input: [0, 0, 1]
+Output: [1, 0, 0]
 ```
 
-**Explain:** For left rotation, elements after `d` come first and the first `d` elements go to the end. For right rotation, the last `d` elements come first.
+**Approach:**
+- Maintain a `write` pointer for next non-zero position
+- Scan entire array
+- Write non-zero elements sequentially
+- Fill remaining positions with zeros
 
-**Complexity:** Time `O(n)`, Space `O(n)`. For in-place rotation, use reverse algorithm with `O(1)` space.
+**Visual Walkthrough:**
+```
+Array: [0, 1, 0, 3, 12]
 
-### 1.5 Move all zeros to the end
-**Idea:** Move non-zero values to the front, then fill remaining positions with zero.
+Initial: write = 0
 
+i=0: nums[0]=0 → Zero, skip
+i=1: nums[1]=1 → Non-zero! Write at position 0
+     nums[0]=1, write=1
+i=2: nums[2]=0 → Zero, skip
+i=3: nums[3]=3 → Non-zero! Write at position 1
+     nums[1]=3, write=2
+i=4: nums[4]=12 → Non-zero! Write at position 2
+     nums[2]=12, write=3
+
+Fill rest with zeros:
+nums[3]=0, nums[4]=0
+
+Result: [1, 3, 12, 0, 0] ✓
+```
+
+**Dart Code:**
 ```dart
 void moveZerosToEnd(List<int> nums) {
   int write = 0;
 
+  // Write all non-zero elements
   for (final num in nums) {
     if (num != 0) {
       nums[write] = num;
@@ -112,6 +287,7 @@ void moveZerosToEnd(List<int> nums) {
     }
   }
 
+  // Fill remaining positions with zeros
   while (write < nums.length) {
     nums[write] = 0;
     write++;
@@ -119,82 +295,185 @@ void moveZerosToEnd(List<int> nums) {
 }
 ```
 
-**Explain:** I keep the order of non-zero elements. First I write all non-zero values, then I fill the remaining array with zeros.
+**Complexity:** Time `O(n)`, Space `O(1)` (in-place)
 
-**Complexity:** Time `O(n)`, Space `O(1)`.
+**Practice Questions:**
+1. Move all **negative numbers** to start
+2. Move all **zeros** to middle (keep relative order)
+3. **Count total zeros** while moving them
+4. Arrange so **odd numbers before even** numbers
 
-### 1.6 Find the missing number in an array of 1 to N
-**Idea:** Expected sum minus actual sum gives the missing number.
+---
 
+### 1.5 Find the missing number in an array of 1 to N
+
+**Problem Statement:**
+Array contains numbers from 1 to N, but one is missing. Find it.
+
+**Example:**
+```
+Input: [1, 2, 4, 5], N=5
+Output: 3 (missing number)
+
+Input: [1, 2, 3], N=4
+Output: 4
+```
+
+**Approach (Math):**
+- Sum of 1 to N = `n * (n + 1) / 2`
+- Sum of actual array = actual sum
+- Missing = Expected - Actual
+
+**Visual Walkthrough:**
+```
+N=5, Array=[1, 2, 4, 5]
+
+Expected sum = 5 * 6 / 2 = 15
+Actual sum = 1 + 2 + 4 + 5 = 12
+Missing = 15 - 12 = 3 ✓
+```
+
+**Dart Code:**
 ```dart
 int missingNumber(List<int> nums, int n) {
+  // Calculate expected sum: 1 + 2 + 3 + ... + n
   final expected = n * (n + 1) ~/ 2;
+  
+  // Calculate actual sum
   final actual = nums.fold<int>(0, (sum, value) => sum + value);
+  
   return expected - actual;
 }
 ```
 
-**Explain:** Sum of numbers from 1 to N is `n * (n + 1) / 2`. If one number is missing, the difference between expected sum and actual sum is the missing number.
+**Complexity:** Time `O(n)`, Space `O(1)`
 
-**Complexity:** Time `O(n)`, Space `O(1)`.
+**Practice Questions:**
+1. Find **missing numbers** (plural, multiple missing)
+2. Array contains 0 to N, find missing
+3. Find missing with **duplicates** allowed
 
-### 1.7 Find the union and intersection of two arrays
-**Idea:** Use sets.
+---
 
-```dart
-Set<int> unionArray(List<int> a, List<int> b) {
-  return {...a, ...b};
-}
+### 1.6 Kadane's Algorithm (Maximum Subarray Sum)
 
-Set<int> intersectionArray(List<int> a, List<int> b) {
-  final setA = a.toSet();
-  return b.where((x) => setA.contains(x)).toSet();
-}
+**Problem Statement:**
+Find the contiguous subarray with largest sum.
+
+**Example:**
+```
+Input: [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+Output: 6 (subarray [4, -1, 2, 1])
+
+Input: [5, 4, -1, 7, 8]
+Output: 23 (entire array)
+
+Input: [-1, -2, -3]
+Output: -1 (single largest element)
 ```
 
-**Explain:** A set stores unique values. For union, add both arrays to a set. For intersection, check which values from the second array exist in the first set.
+**Approach:**
+- At each position, decide: start new subarray or extend previous?
+- Keep track of best sum seen so far
 
-**Complexity:** Time `O(n + m)`, Space `O(n + m)`.
+**Visual Walkthrough:**
+```
+Array: [-2, 1, -3, 4, -1, 2, 1]
 
-### 1.8 Kadane's Algorithm (Maximum Subarray Sum)
-**Idea:** At each index, decide whether to start a new subarray or extend the previous one.
+i=0: num=-2
+  current = -2
+  best = -2
 
+i=1: num=1
+  Option 1: Start new: 1
+  Option 2: Extend previous: -2 + 1 = -1
+  current = 1 (start new is better)
+  best = 1
+
+i=3: num=4
+  current = 4 (start new)
+  best = 4
+
+i=6: num=1
+  current = 5 + 1 = 6
+  best = 6 ✓
+```
+
+**Dart Code:**
 ```dart
 int maxSubArray(List<int> nums) {
-  int current = nums[0];
-  int best = nums[0];
+  int current = nums[0];  // Best sum ending at current index
+  int best = nums[0];     // Best sum seen so far
 
   for (int i = 1; i < nums.length; i++) {
-    current = nums[i] > current + nums[i] ? nums[i] : current + nums[i];
-    best = best > current ? best : current;
+    // Either start fresh or extend previous sum
+    current = max(nums[i], current + nums[i]);
+    best = max(best, current);
   }
 
   return best;
 }
+
+// Helper function
+int max(int a, int b) => a > b ? a : b;
 ```
 
-**Explain:** `current` stores the best subarray sum ending at current index. If previous sum becomes harmful, I start fresh from current number.
+**Complexity:** Time `O(n)`, Space `O(1)`
 
-**Complexity:** Time `O(n)`, Space `O(1)`.
+**Practice Questions:**
+1. Find **minimum subarray sum**
+2. Find **maximum sum circular subarray** (wraps around)
+3. Return the **actual subarray**, not just sum
 
 ---
 
 ## 2. Strings
 
 ### 2.1 Reverse a string
+
+**Problem Statement:**
+Reverse the characters in a string.
+
+**Example:**
+```
+Input: "hello"
+Output: "olleh"
+
+Input: "a"
+Output: "a"
+```
+
+**Dart Code:**
 ```dart
 String reverseString(String s) {
   return s.split('').reversed.join();
 }
 ```
 
-**Explain:** Convert the string to characters, reverse them, and join again.
+**Complexity:** Time `O(n)`, Space `O(n)`
 
-**Complexity:** Time `O(n)`, Space `O(n)`.
+---
 
 ### 2.2 Check if a string is a palindrome
-**Idea:** Use two pointers from both ends.
 
+**Problem Statement:**
+Determine if string reads the same forwards and backwards.
+
+**Example:**
+```
+Input: "racecar"
+Output: true
+
+Input: "hello"
+Output: false
+```
+
+**Approach (Two Pointer):**
+- Start with pointers at both ends
+- Compare characters moving inward
+- If mismatch found, return false
+
+**Dart Code:**
 ```dart
 bool isPalindrome(String s) {
   int left = 0;
@@ -209,35 +488,64 @@ bool isPalindrome(String s) {
 }
 ```
 
-**Explain:** A palindrome reads the same from both sides. I compare first with last, second with second-last, and so on.
+**Complexity:** Time `O(n)`, Space `O(1)`
 
-**Complexity:** Time `O(n)`, Space `O(1)`.
+---
 
 ### 2.3 Check if two strings are anagrams
-**Idea:** Count characters.
 
+**Problem Statement:**
+Anagrams have same characters with same frequencies, just rearranged.
+
+**Example:**
+```
+Input: "listen", "silent"
+Output: true
+
+Input: "hello", "world"
+Output: false
+```
+
+**Dart Code:**
 ```dart
 bool areAnagrams(String a, String b) {
   if (a.length != b.length) return false;
 
   final count = <String, int>{};
+  
   for (final ch in a.split('')) {
     count[ch] = (count[ch] ?? 0) + 1;
   }
+  
   for (final ch in b.split('')) {
     if (!count.containsKey(ch)) return false;
     count[ch] = count[ch]! - 1;
     if (count[ch] == 0) count.remove(ch);
   }
+  
   return count.isEmpty;
 }
 ```
 
-**Explain:** Two anagrams have the same characters with the same frequency. I add counts from first string and subtract using second string.
+**Complexity:** Time `O(n)`, Space `O(k)`
 
-**Complexity:** Time `O(n)`, Space `O(k)` where `k` is unique characters.
+---
 
 ### 2.4 Find the first non-repeating character
+
+**Problem Statement:**
+Find the first character that appears exactly once.
+
+**Example:**
+```
+Input: "leetcode"
+Output: "l"
+
+Input: "aab"
+Output: null
+```
+
+**Dart Code:**
 ```dart
 String? firstNonRepeating(String s) {
   final count = <String, int>{};
@@ -254,224 +562,373 @@ String? firstNonRepeating(String s) {
 }
 ```
 
-**Explain:** First I count every character. Then I scan the string again and return the first character whose count is one.
+**Complexity:** Time `O(n)`, Space `O(k)`
 
-**Complexity:** Time `O(n)`, Space `O(k)`.
+---
 
 ### 2.5 Remove duplicate characters from a string
+
+**Problem Statement:**
+Remove duplicate characters keeping only first occurrence. Maintain order.
+
+**Dart Code:**
 ```dart
 String removeDuplicateChars(String s) {
   final seen = <String>{};
   final result = StringBuffer();
 
   for (final ch in s.split('')) {
-    if (seen.add(ch)) result.write(ch);
+    if (seen.add(ch)) {
+      result.write(ch);
+    }
   }
 
   return result.toString();
 }
 ```
 
-**Explain:** A set tells whether I have already seen a character. I add only the first occurrence to the result.
-
-**Complexity:** Time `O(n)`, Space `O(k)`.
-
-### 2.6 Count vowels and consonants in a string
-```dart
-Map<String, int> countVowelsAndConsonants(String s) {
-  final vowels = {'a', 'e', 'i', 'o', 'u'};
-  int vowelCount = 0;
-  int consonantCount = 0;
-
-  for (final ch in s.toLowerCase().split('')) {
-    if (RegExp(r'[a-z]').hasMatch(ch)) {
-      if (vowels.contains(ch)) {
-        vowelCount++;
-      } else {
-        consonantCount++;
-      }
-    }
-  }
-
-  return {'vowels': vowelCount, 'consonants': consonantCount};
-}
-```
-
-**Explain:** I ignore non-alphabet characters. For letters, I check whether the character is a vowel or consonant.
-
-**Complexity:** Time `O(n)`, Space `O(1)`.
-
-### 2.7 Longest common prefix among strings
-```dart
-String longestCommonPrefix(List<String> words) {
-  if (words.isEmpty) return '';
-
-  String prefix = words[0];
-  for (int i = 1; i < words.length; i++) {
-    while (!words[i].startsWith(prefix)) {
-      prefix = prefix.substring(0, prefix.length - 1);
-      if (prefix.isEmpty) return '';
-    }
-  }
-
-  return prefix;
-}
-```
-
-**Explain:** I start with the first word as prefix. If another word does not start with it, I keep reducing the prefix until it matches.
-
-**Complexity:** Time `O(n * m)`, Space `O(1)`.
-
-### 2.8 Implement atoi() / myAtoi()
-**Idea:** Handle spaces, sign, and digits.
-
-```dart
-int myAtoi(String s) {
-  int i = 0;
-  int sign = 1;
-  int result = 0;
-
-  while (i < s.length && s[i] == ' ') i++;
-
-  if (i < s.length && (s[i] == '+' || s[i] == '-')) {
-    sign = s[i] == '-' ? -1 : 1;
-    i++;
-  }
-
-  while (i < s.length) {
-    final code = s.codeUnitAt(i);
-    if (code < 48 || code > 57) break;
-    result = result * 10 + (code - 48);
-    i++;
-  }
-
-  return result * sign;
-}
-```
-
-**Explain:** I skip spaces, read optional sign, then build the number digit by digit until I find a non-digit character.
-
-**Complexity:** Time `O(n)`, Space `O(1)`.
+**Complexity:** Time `O(n)`, Space `O(k)`
 
 ---
 
-## 3. Pattern Questions
+## 3. Linked Lists
 
-Pattern questions mainly test nested loops. Explain rows, columns, and print condition.
+### 3.1 Reverse a Linked List
 
-Helper used in some examples:
+**Problem Statement:**
+Reverse the direction of links in a linked list.
 
-```dart
-String repeatText(String value, int count) {
-  return List.filled(count, value).join();
-}
+**Example:**
+```
+Input:  1 → 2 → 3 → null
+Output: 3 → 2 → 1 → null
 ```
 
-### 3.1 Print solid patterns
+**Approach:**
+- Keep three pointers: previous, current, next
+- Reverse links one by one
+- Move forward through list
+
+**Visual Walkthrough:**
+```
+Initial: 1 → 2 → 3 → null
+
+Step 1: prev=null, curr=1, next=2
+        Save next: 2
+        curr.next = null
+        Move: prev=1, curr=2
+        Result: null ← 1  2 → 3 → null
+
+Step 2: prev=1, curr=2, next=3
+        Save next: 3
+        curr.next = 1
+        Move: prev=2, curr=3
+        Result: 1 ← 2  3 → null
+
+Step 3: prev=2, curr=3, next=null
+        Save next: null
+        curr.next = 2
+        Move: prev=3, curr=null
+        Result: null ← 1 ← 2 ← 3
+
+Return: 3 ✓
+```
+
+**Dart Code:**
 ```dart
-void solidSquare(int n) {
-  for (int i = 0; i < n; i++) {
-    print(repeatText('* ', n));
+class Node {
+  int value;
+  Node? next;
+  
+  Node(this.value, [this.next]);
+}
+
+// Iterative approach
+Node? reverseLinkedList(Node? head) {
+  Node? prev = null;
+  Node? current = head;
+  
+  while (current != null) {
+    final next = current.next;    // Save next node
+    current.next = prev;           // Reverse the link
+    prev = current;                // Move prev forward
+    current = next;                // Move current forward
   }
+  
+  return prev;  // New head
 }
 ```
 
-**Explain:** Outer loop controls rows. Inner printing controls columns.
+**Complexity:** Time `O(n)`, Space `O(1)`
 
-### 3.2 Print hollow patterns
+**Practice Questions:**
+1. Reverse **part of the list** (from position m to n)
+2. Reverse **in groups of k**
+3. **Recursive approach** to reverse
+4. Find **kth node from end**
+
+---
+
+### 3.2 Detect Cycle in Linked List
+
+**Problem Statement:**
+Determine if linked list contains a cycle.
+
+**Example:**
+```
+1 → 2 → 3 → 4
+        ↑   ↓
+        └───┘  (cycle present)
+```
+
+**Approach (Floyd's Cycle Detection):**
+- Use two pointers: slow (moves 1 step), fast (moves 2 steps)
+- If they meet, cycle exists
+- If fast reaches null, no cycle
+
+**Dart Code:**
 ```dart
-void hollowSquare(int n) {
-  for (int i = 0; i < n; i++) {
-    String row = '';
-    for (int j = 0; j < n; j++) {
-      if (i == 0 || i == n - 1 || j == 0 || j == n - 1) {
-        row += '* ';
-      } else {
-        row += '  ';
-      }
+bool hasCycle(Node? head) {
+  Node? slow = head;
+  Node? fast = head;
+  
+  while (fast != null && fast.next != null) {
+    slow = slow!.next;           // Move 1 step
+    fast = fast.next!.next;      // Move 2 steps
+    
+    if (slow == fast) {
+      return true;  // They met, cycle found
     }
-    print(row);
   }
+  
+  return false;  // fast reached null, no cycle
 }
 ```
 
-**Explain:** Print star on boundary rows and boundary columns. Print spaces inside.
+**Complexity:** Time `O(n)`, Space `O(1)`
 
-### 3.3 Number patterns
+---
+
+### 3.3 Find Middle of Linked List
+
+**Problem Statement:**
+Find the middle node of linked list.
+
+**Example:**
+```
+Input:  1 → 2 → 3 → 4 → 5
+Output: 3 (middle node)
+
+Input:  1 → 2 → 3 → 4
+Output: 3 (or 4, depending on definition)
+```
+
+**Dart Code:**
 ```dart
-void numberTriangle(int n) {
-  for (int i = 1; i <= n; i++) {
-    String row = '';
-    for (int j = 1; j <= i; j++) {
-      row += '$j ';
+Node? findMiddle(Node? head) {
+  Node? slow = head;
+  Node? fast = head;
+  
+  // When fast reaches end, slow is at middle
+  while (fast != null && fast.next != null) {
+    slow = slow!.next;
+    fast = fast.next!.next;
+  }
+  
+  return slow;
+}
+```
+
+**Complexity:** Time `O(n)`, Space `O(1)`
+
+---
+
+## 4. Trees & Binary Search Trees
+
+### 4.1 Inorder Traversal of Binary Tree
+
+**Problem Statement:**
+Visit nodes in order: Left, Root, Right
+
+**Example:**
+```
+    1
+   / \
+  2   3
+  
+Output: [2, 1, 3]
+```
+
+**Visual Walkthrough:**
+```
+Tree:     1
+         / \
+        2   3
+
+Traversal:
+1. Visit left of 1 → node 2
+2. Visit left of 2 → null
+3. Add 2 to result
+4. Visit right of 2 → null
+5. Add 1 to result
+6. Visit right of 1 → node 3
+7. Visit left of 3 → null
+8. Add 3 to result
+9. Visit right of 3 → null
+
+Result: [2, 1, 3] ✓
+```
+
+**Dart Code:**
+```dart
+class TreeNode {
+  int value;
+  TreeNode? left;
+  TreeNode? right;
+  
+  TreeNode(this.value, [this.left, this.right]);
+}
+
+List<int> inorderTraversal(TreeNode? root) {
+  final result = <int>[];
+  
+  void traverse(TreeNode? node) {
+    if (node == null) return;
+    
+    traverse(node.left);       // Go left
+    result.add(node.value);    // Visit root
+    traverse(node.right);      // Go right
+  }
+  
+  traverse(root);
+  return result;
+}
+
+// Iterative approach using stack
+List<int> inorderTraversalIterative(TreeNode? root) {
+  final result = <int>[];
+  final stack = <TreeNode>[];
+  TreeNode? current = root;
+  
+  while (current != null || stack.isNotEmpty) {
+    while (current != null) {
+      stack.add(current);
+      current = current.left;
     }
-    print(row);
+    
+    current = stack.removeLast();
+    result.add(current.value);
+    current = current.right;
   }
+  
+  return result;
 }
 ```
 
-### 3.4 Floyd's Triangle
+**Complexity:** Time `O(n)`, Space `O(h)`
+
+---
+
+### 4.2 Level Order Traversal (BFS)
+
+**Problem Statement:**
+Visit nodes level by level from top to bottom.
+
+**Example:**
+```
+    1
+   / \
+  2   3
+ / \
+4   5
+
+Output: [[1], [2, 3], [4, 5]]
+```
+
+**Dart Code:**
 ```dart
-void floydTriangle(int n) {
-  int value = 1;
-  for (int i = 1; i <= n; i++) {
-    String row = '';
-    for (int j = 1; j <= i; j++) {
-      row += '${value++} ';
+List<List<int>> levelOrderTraversal(TreeNode? root) {
+  final result = <List<int>>[];
+  if (root == null) return result;
+  
+  final queue = <TreeNode>[root];
+  
+  while (queue.isNotEmpty) {
+    final levelSize = queue.length;
+    final currentLevel = <int>[];
+    
+    for (int i = 0; i < levelSize; i++) {
+      final node = queue.removeAt(0);
+      currentLevel.add(node.value);
+      
+      if (node.left != null) queue.add(node.left!);
+      if (node.right != null) queue.add(node.right!);
     }
-    print(row);
+    
+    result.add(currentLevel);
   }
+  
+  return result;
 }
 ```
 
-### 3.5 Inverted patterns
-```dart
-void invertedTriangle(int n) {
-  for (int i = n; i >= 1; i--) {
-    print(repeatText('* ', i));
-  }
-}
+**Complexity:** Time `O(n)`, Space `O(w)` where w is max width
+
+---
+
+## 5. Pattern Questions
+
+### 5.1 Print diamond pattern
+
+**Pattern:**
+```
+    *
+   * *
+  * * *
+ * * * *
+* * * * *
+ * * * *
+  * * *
+   * *
+    *
 ```
 
-### 3.6 Butterfly pattern
-```dart
-void butterfly(int n) {
-  for (int i = 1; i <= n; i++) {
-    print(
-      repeatText('*', i) +
-          repeatText(' ', 2 * (n - i)) +
-          repeatText('*', i),
-    );
-  }
-  for (int i = n; i >= 1; i--) {
-    print(
-      repeatText('*', i) +
-          repeatText(' ', 2 * (n - i)) +
-          repeatText('*', i),
-    );
-  }
-}
-```
-
-### 3.7 Diamond pattern
+**Dart Code:**
 ```dart
 void diamond(int n) {
+  // Upper half
   for (int i = 1; i <= n; i++) {
-    print(repeatText(' ', n - i) + repeatText('* ', i));
+    print(List.filled(n - i, ' ').join() + List.filled(i, '* ').join());
   }
+  // Lower half
   for (int i = n - 1; i >= 1; i--) {
-    print(repeatText(' ', n - i) + repeatText('* ', i));
+    print(List.filled(n - i, ' ').join() + List.filled(i, '* ').join());
   }
 }
 ```
 
-**Pattern complexity:** Usually Time `O(n^2)`, Space `O(1)` excluding printed output.
-
 ---
 
-## 4. Number Problems
+## 6. Number Problems
 
-### 4.1 Check if a number is prime
+### 6.1 Check if a number is prime
+
+**Problem Statement:**
+Determine if number is divisible only by 1 and itself.
+
+**Example:**
+```
+Input: 17
+Output: true
+
+Input: 15
+Output: false
+```
+
+**Approach:**
+- Check divisibility up to √n
+
+**Dart Code:**
 ```dart
 bool isPrime(int n) {
   if (n <= 1) return false;
@@ -482,11 +939,23 @@ bool isPrime(int n) {
 }
 ```
 
-**Explain:** I only check up to square root because if a number has a larger factor, it must also have a smaller paired factor.
+**Complexity:** Time `O(√n)`, Space `O(1)`
 
-**Complexity:** Time `O(sqrt(n))`, Space `O(1)`.
+---
 
-### 4.2 Find GCD / HCF and LCM
+### 6.2 Find GCD and LCM
+
+**Problem Statement:**
+- **GCD:** Largest number that divides both
+- **LCM:** Smallest number divisible by both
+
+**Example:**
+```
+GCD(12, 8) = 4
+LCM(12, 8) = 24
+```
+
+**Dart Code:**
 ```dart
 int gcd(int a, int b) {
   while (b != 0) {
@@ -502,60 +971,27 @@ int lcm(int a, int b) {
 }
 ```
 
-**Explain:** GCD uses Euclidean algorithm. LCM formula is `a * b / gcd`.
+**Complexity:** Time `O(log(min(a, b)))`, Space `O(1)`
 
-**Complexity:** Time `O(log(min(a, b)))`, Space `O(1)`.
+---
 
-### 4.3 Check if a number is palindrome
-```dart
-bool isNumberPalindrome(int n) {
-  final original = n;
-  int reversed = 0;
+### 6.3 Fibonacci Series
 
-  while (n > 0) {
-    reversed = reversed * 10 + n % 10;
-    n ~/= 10;
-  }
+**Problem Statement:**
+Generate first N Fibonacci numbers.
 
-  return original == reversed;
-}
+**Example:**
+```
+Input: 5
+Output: [0, 1, 1, 2, 3]
 ```
 
-**Explain:** Reverse the number and compare it with the original number.
-
-### 4.4 Armstrong number
-```dart
-bool isArmstrong(int n) {
-  final original = n;
-  final digits = n.toString().length;
-  int sum = 0;
-
-  while (n > 0) {
-    final digit = n % 10;
-    sum += powInt(digit, digits);
-    n ~/= 10;
-  }
-
-  return sum == original;
-}
-
-int powInt(int base, int exp) {
-  int result = 1;
-  for (int i = 0; i < exp; i++) {
-    result *= base;
-  }
-  return result;
-}
-```
-
-**Explain:** An Armstrong number equals the sum of each digit raised to the power of total digits.
-
-### 4.5 Fibonacci series
+**Dart Code:**
 ```dart
 List<int> fibonacci(int n) {
   if (n <= 0) return [];
   if (n == 1) return [0];
-
+  
   final result = [0, 1];
   for (int i = 2; i < n; i++) {
     result.add(result[i - 1] + result[i - 2]);
@@ -564,41 +1000,17 @@ List<int> fibonacci(int n) {
 }
 ```
 
-**Explain:** Every Fibonacci number is the sum of the previous two numbers.
-
-### 4.6 Count digits in a number
-```dart
-int countDigits(int n) {
-  if (n == 0) return 1;
-  n = n.abs();
-  int count = 0;
-  while (n > 0) {
-    count++;
-    n ~/= 10;
-  }
-  return count;
-}
-```
-
-### 4.7 Reverse a number
-```dart
-int reverseNumber(int n) {
-  int reversed = 0;
-  while (n > 0) {
-    reversed = reversed * 10 + n % 10;
-    n ~/= 10;
-  }
-  return reversed;
-}
-```
+**Complexity:** Time `O(n)`, Space `O(n)`
 
 ---
 
-## 5. Recursion
+## 7. Recursion
 
-**How to explain recursion:** A recursive function has a base case to stop and a recursive call to solve a smaller problem.
+### 7.1 Factorial of a number
 
-### 5.1 Factorial of a number
+**Problem:** Calculate n! = n × (n-1) × ... × 1
+
+**Dart Code:**
 ```dart
 int factorial(int n) {
   if (n <= 1) return 1;
@@ -606,70 +1018,103 @@ int factorial(int n) {
 }
 ```
 
-**Explain:** `n! = n * (n - 1)!`. Base case is `0!` or `1! = 1`.
-
-### 5.2 Fibonacci series (Recursive)
-```dart
-int fib(int n) {
-  if (n <= 1) return n;
-  return fib(n - 1) + fib(n - 2);
-}
-```
-
-**Explain:** This is simple but not optimal because it recalculates values. Optimized version uses DP/memoization.
-
-### 5.3 Check if a string is palindrome (Recursive)
-```dart
-bool recursivePalindrome(String s, int left, int right) {
-  if (left >= right) return true;
-  if (s[left] != s[right]) return false;
-  return recursivePalindrome(s, left + 1, right - 1);
-}
-```
-
-### 5.4 Print all subsequences of a string
-```dart
-void printSubsequences(String s, int index, String current) {
-  if (index == s.length) {
-    print(current);
-    return;
-  }
-
-  printSubsequences(s, index + 1, current + s[index]);
-  printSubsequences(s, index + 1, current);
-}
-```
-
-**Explain:** For every character, we have two choices: include it or exclude it.
-
-**Complexity:** Time `O(2^n)`.
-
-### 5.5 Tower of Hanoi
-```dart
-void towerOfHanoi(int n, String from, String helper, String to) {
-  if (n == 0) return;
-
-  towerOfHanoi(n - 1, from, to, helper);
-  print('Move disk $n from $from to $to');
-  towerOfHanoi(n - 1, helper, from, to);
-}
-```
-
-**Explain:** Move `n - 1` disks to helper, move largest disk to target, then move `n - 1` disks from helper to target.
-
-### 5.6 Sum of digits of a number (Recursive)
-```dart
-int sumDigits(int n) {
-  if (n == 0) return 0;
-  return n % 10 + sumDigits(n ~/ 10);
-}
-```
+**Complexity:** Time `O(n)`, Space `O(n)` (call stack)
 
 ---
 
-## 6. Stack & Queue
+### 7.2 Power of a number
 
-### 6.1 Implement Stack using array
+**Problem:** Calculate x^n efficiently
+
+**Dart Code:**
+```dart
+int power(int x, int n) {
+  if (n == 0) return 1;
+  
+  if (n % 2 == 0) {
+    final half = power(x, n ~/ 2);
+    return half * half;
+  } else {
+    return x * power(x, n - 1);
+  }
+}
+```
+
+**Complexity:** Time `O(log n)`, Space `O(log n)`
+
+---
+
+## 8. Dynamic Programming
+
+### 8.1 Fibonacci with Memoization
+
+**Problem:** Calculate Nth Fibonacci with optimization
+
+**Dart Code:**
+```dart
+int fibMemo(int n, Map<int, int> memo) {
+  if (n <= 1) return n;
+  if (memo.containsKey(n)) return memo[n]!;
+  
+  memo[n] = fibMemo(n - 1, memo) + fibMemo(n - 2, memo);
+  return memo[n]!;
+}
+
+// Usage:
+void main() {
+  final memo = <int, int>{};
+  print(fibMemo(10, memo));  // Output: 55
+}
+```
+
+**Complexity:** Time `O(n)`, Space `O(n)`
+
+---
+
+### 8.2 Coin Change Problem
+
+**Problem:** Find minimum coins to make amount
+
+**Example:**
+```
+Coins: [1, 2, 5]
+Amount: 5
+Output: 1 (one 5-coin)
+
+Coins: [2]
+Amount: 3
+Output: -1 (impossible)
+```
+
+**Dart Code:**
+```dart
+int coinChange(List<int> coins, int amount) {
+  final dp = List<int>.filled(amount + 1, amount + 1);
+  dp[0] = 0;
+  
+  for (int i = 1; i <= amount; i++) {
+    for (final coin in coins) {
+      if (coin <= i) {
+        dp[i] = min(dp[i], dp[i - coin] + 1);
+      }
+    }
+  }
+  
+  return dp[amount] > amount ? -1 : dp[amount];
+}
+
+int min(int a, int b) => a < b ? a : b;
+```
+
+**Complexity:** Time `O(amount × coins)`, Space `O(amount)`
+
+---
+
+## 9. Stack & Queue
+
+### 9.1 Implement Stack using array
+
+**Dart Code:**
 ```dart
 class Stack<T> {
   final List<T> _items = [];
@@ -681,27 +1126,27 @@ class Stack<T> {
   T? peek() => _items.isEmpty ? null : _items.last;
 
   bool get isEmpty => _items.isEmpty;
+  
+  int get size => _items.length;
 }
 ```
 
-**Explain:** Stack follows LIFO: last in, first out.
+---
 
-### 6.2 Implement Queue using array
-```dart
-class Queue<T> {
-  final List<T> _items = [];
+### 9.2 Check for balanced parentheses
 
-  void enqueue(T value) => _items.add(value);
+**Problem:** Verify all brackets are properly closed
 
-  T? dequeue() => _items.isEmpty ? null : _items.removeAt(0);
+**Example:**
+```
+Input: "({[]})"
+Output: true
 
-  bool get isEmpty => _items.isEmpty;
-}
+Input: "({[}])"
+Output: false
 ```
 
-**Explain:** Queue follows FIFO: first in, first out. In production, use `ListQueue` from `dart:collection` for efficient dequeue.
-
-### 6.3 Check for balanced parentheses
+**Dart Code:**
 ```dart
 bool isBalanced(String s) {
   final stack = <String>[];
@@ -709,8 +1154,8 @@ bool isBalanced(String s) {
 
   for (final ch in s.split('')) {
     if (pairs.containsValue(ch)) {
-      stack.add(ch);
-    } else if (pairs.containsKey(ch)) {
+      stack.add(ch);  // Opening bracket
+    } else if (pairs.containsKey(ch)) {  // Closing bracket
       if (stack.isEmpty || stack.removeLast() != pairs[ch]) {
         return false;
       }
@@ -721,79 +1166,26 @@ bool isBalanced(String s) {
 }
 ```
 
-**Explain:** Push opening brackets. For every closing bracket, top of stack must be its matching opening bracket.
-
-**Complexity:** Time `O(n)`, Space `O(n)`.
-
-### 6.4 Infix to Postfix conversion (Shunting-Yard)
-```dart
-int precedence(String op) {
-  if (op == '+' || op == '-') return 1;
-  if (op == '*' || op == '/') return 2;
-  return 0;
-}
-
-String infixToPostfix(String expression) {
-  final stack = <String>[];
-  final output = StringBuffer();
-
-  for (final ch in expression.replaceAll(' ', '').split('')) {
-    if (RegExp(r'[a-zA-Z0-9]').hasMatch(ch)) {
-      output.write(ch);
-    } else if (ch == '(') {
-      stack.add(ch);
-    } else if (ch == ')') {
-      while (stack.isNotEmpty && stack.last != '(') {
-        output.write(stack.removeLast());
-      }
-      stack.removeLast();
-    } else {
-      while (stack.isNotEmpty && precedence(stack.last) >= precedence(ch)) {
-        output.write(stack.removeLast());
-      }
-      stack.add(ch);
-    }
-  }
-
-  while (stack.isNotEmpty) {
-    output.write(stack.removeLast());
-  }
-
-  return output.toString();
-}
-```
-
-**Explain:** Operators wait in stack until their priority allows them to come out. Operands go directly to output.
-
-### 6.5 Evaluate Postfix expression
-```dart
-int evaluatePostfix(String expression) {
-  final stack = <int>[];
-
-  for (final ch in expression.split('')) {
-    if (RegExp(r'\d').hasMatch(ch)) {
-      stack.add(int.parse(ch));
-    } else {
-      final b = stack.removeLast();
-      final a = stack.removeLast();
-      if (ch == '+') stack.add(a + b);
-      if (ch == '-') stack.add(a - b);
-      if (ch == '*') stack.add(a * b);
-      if (ch == '/') stack.add(a ~/ b);
-    }
-  }
-
-  return stack.last;
-}
-```
-
-**Explain:** In postfix, operator comes after operands. So when I see an operator, I pop two values, calculate, and push result.
+**Complexity:** Time `O(n)`, Space `O(n)`
 
 ---
 
-## 7. Searching & Sorting
+## 10. Searching & Sorting
 
-### 7.1 Binary Search
+### 10.1 Binary Search
+
+**Problem:** Find element in sorted array in O(log n)
+
+**Example:**
+```
+Input: [1, 3, 5, 7, 9], target=5
+Output: 2 (index)
+
+Input: [1, 3, 5, 7, 9], target=6
+Output: -1 (not found)
+```
+
+**Dart Code:**
 ```dart
 int binarySearch(List<int> nums, int target) {
   int left = 0;
@@ -813,84 +1205,15 @@ int binarySearch(List<int> nums, int target) {
 }
 ```
 
-**Explain:** Binary search works only on sorted arrays. It cuts the search space in half each time.
+**Complexity:** Time `O(log n)`, Space `O(1)`
 
-**Complexity:** Time `O(log n)`, Space `O(1)`.
+---
 
-### 7.2 Linear Search
-```dart
-int linearSearch(List<int> nums, int target) {
-  for (int i = 0; i < nums.length; i++) {
-    if (nums[i] == target) return i;
-  }
-  return -1;
-}
-```
+### 10.2 Merge Sort
 
-**Complexity:** Time `O(n)`, Space `O(1)`.
+**Problem:** Sort array in O(n log n)
 
-### 7.3 Bubble Sort
-```dart
-void bubbleSort(List<int> nums) {
-  for (int i = 0; i < nums.length; i++) {
-    bool swapped = false;
-    for (int j = 0; j < nums.length - i - 1; j++) {
-      if (nums[j] > nums[j + 1]) {
-        final temp = nums[j];
-        nums[j] = nums[j + 1];
-        nums[j + 1] = temp;
-        swapped = true;
-      }
-    }
-    if (!swapped) break;
-  }
-}
-```
-
-**Explain:** Bigger elements bubble to the end after each pass.
-
-**Complexity:** Time `O(n^2)`, Space `O(1)`.
-
-### 7.4 Selection Sort
-```dart
-void selectionSort(List<int> nums) {
-  for (int i = 0; i < nums.length; i++) {
-    int minIndex = i;
-    for (int j = i + 1; j < nums.length; j++) {
-      if (nums[j] < nums[minIndex]) minIndex = j;
-    }
-    final temp = nums[i];
-    nums[i] = nums[minIndex];
-    nums[minIndex] = temp;
-  }
-}
-```
-
-**Explain:** Find the minimum element from unsorted part and place it at the current position.
-
-**Complexity:** Time `O(n^2)`, Space `O(1)`.
-
-### 7.5 Insertion Sort
-```dart
-void insertionSort(List<int> nums) {
-  for (int i = 1; i < nums.length; i++) {
-    final key = nums[i];
-    int j = i - 1;
-
-    while (j >= 0 && nums[j] > key) {
-      nums[j + 1] = nums[j];
-      j--;
-    }
-    nums[j + 1] = key;
-  }
-}
-```
-
-**Explain:** Take one element and insert it in the correct position in the sorted left part.
-
-**Complexity:** Time `O(n^2)`, Space `O(1)`.
-
-### 7.6 Merge Sort
+**Dart Code:**
 ```dart
 List<int> mergeSort(List<int> nums) {
   if (nums.length <= 1) return nums;
@@ -904,8 +1227,7 @@ List<int> mergeSort(List<int> nums) {
 
 List<int> merge(List<int> left, List<int> right) {
   final result = <int>[];
-  int i = 0;
-  int j = 0;
+  int i = 0, j = 0;
 
   while (i < left.length && j < right.length) {
     if (left[i] <= right[j]) {
@@ -921,43 +1243,34 @@ List<int> merge(List<int> left, List<int> right) {
 }
 ```
 
-**Explain:** Divide the array into halves, sort each half, then merge two sorted arrays.
-
-**Complexity:** Time `O(n log n)`, Space `O(n)`.
-
-### 7.7 Quick Sort
-```dart
-List<int> quickSort(List<int> nums) {
-  if (nums.length <= 1) return nums;
-
-  final pivot = nums[nums.length ~/ 2];
-  final less = nums.where((x) => x < pivot).toList();
-  final equal = nums.where((x) => x == pivot).toList();
-  final greater = nums.where((x) => x > pivot).toList();
-
-  return [...quickSort(less), ...equal, ...quickSort(greater)];
-}
-```
-
-**Explain:** Choose a pivot, put smaller elements on left and greater elements on right, then sort both sides recursively.
-
-**Complexity:** Average Time `O(n log n)`, Worst Time `O(n^2)`, Space depends on implementation.
+**Complexity:** Time `O(n log n)`, Space `O(n)`
 
 ---
 
-## 8. Common Interview Problems
+## 11. Common Interview Problems
 
-### 8.1 Two Sum Problem
-**Idea:** Use a map to store required complement.
+### 11.1 Two Sum Problem
 
+**Problem:** Find two numbers that add up to target
+
+**Example:**
+```
+Input: [2, 7, 11, 15], target=9
+Output: [0, 1]
+
+Input: [3, 3], target=6
+Output: [0, 1]
+```
+
+**Dart Code:**
 ```dart
 List<int> twoSum(List<int> nums, int target) {
   final seen = <int, int>{};
 
   for (int i = 0; i < nums.length; i++) {
-    final need = target - nums[i];
-    if (seen.containsKey(need)) {
-      return [seen[need]!, i];
+    final complement = target - nums[i];
+    if (seen.containsKey(complement)) {
+      return [seen[complement]!, i];
     }
     seen[nums[i]] = i;
   }
@@ -966,29 +1279,24 @@ List<int> twoSum(List<int> nums, int target) {
 }
 ```
 
-**Explain:** For every number, I check whether the number needed to reach target already exists in the map.
+**Complexity:** Time `O(n)`, Space `O(n)`
 
-**Complexity:** Time `O(n)`, Space `O(n)`.
+---
 
-### 8.2 Check if array contains a pair with given sum
-```dart
-bool hasPairWithSum(List<int> nums, int target) {
-  final seen = <int>{};
+### 11.2 Find majority element (Boyer-Moore Voting)
 
-  for (final num in nums) {
-    if (seen.contains(target - num)) return true;
-    seen.add(num);
-  }
+**Problem:** Find element appearing more than n/2 times
 
-  return false;
-}
+**Example:**
+```
+Input: [3, 2, 3]
+Output: 3
+
+Input: [1]
+Output: 1
 ```
 
-**Explain:** Same as Two Sum, but I only return true or false.
-
-### 8.3 Find majority element (Boyer-Moore Voting)
-**Idea:** Majority element appears more than `n / 2` times.
-
+**Dart Code:**
 ```dart
 int? majorityElement(List<int> nums) {
   int? candidate;
@@ -1004,36 +1312,15 @@ int? majorityElement(List<int> nums) {
 }
 ```
 
-**Explain:** Opposite elements cancel each other. If a majority exists, it will remain as candidate at the end. Then I verify it.
+**Complexity:** Time `O(n)`, Space `O(1)`
 
-**Complexity:** Time `O(n)`, Space `O(1)`.
+---
 
-### 8.4 Leaders in an array
-**Definition:** An element is a leader if no element on its right is greater than it.
+### 11.3 Trapping Rain Water
 
-```dart
-List<int> leaders(List<int> nums) {
-  final result = <int>[];
-  int maxRight = nums.last;
+**Problem:** Calculate water trapped between elevation changes
 
-  for (int i = nums.length - 1; i >= 0; i--) {
-    if (nums[i] >= maxRight) {
-      result.add(nums[i]);
-      maxRight = nums[i];
-    }
-  }
-
-  return result.reversed.toList();
-}
-```
-
-**Explain:** I scan from right because I need to know the maximum value on the right side.
-
-**Complexity:** Time `O(n)`, Space `O(n)` for output.
-
-### 8.5 Trapping Rain Water
-**Idea:** Water at any index depends on left max and right max.
-
+**Dart Code:**
 ```dart
 int trapRainWater(List<int> height) {
   int left = 0;
@@ -1064,78 +1351,121 @@ int trapRainWater(List<int> height) {
 }
 ```
 
-**Explain:** I use two pointers. The smaller side decides the water because water is limited by the shorter boundary.
-
-**Complexity:** Time `O(n)`, Space `O(1)`.
-
-### 8.6 Maximum / Minimum in sliding window
-**Simple version:** For each window, calculate max/min.
-
-```dart
-List<int> maxSlidingWindowSimple(List<int> nums, int k) {
-  final result = <int>[];
-
-  for (int i = 0; i <= nums.length - k; i++) {
-    int maxValue = nums[i];
-    for (int j = i; j < i + k; j++) {
-      if (nums[j] > maxValue) maxValue = nums[j];
-    }
-    result.add(maxValue);
-  }
-
-  return result;
-}
-```
-
-**Optimized idea:** Use a deque to keep useful indices in decreasing order. The front always contains the maximum for the current window.
-
-```dart
-List<int> maxSlidingWindow(List<int> nums, int k) {
-  final result = <int>[];
-  final deque = <int>[];
-
-  for (int i = 0; i < nums.length; i++) {
-    while (deque.isNotEmpty && deque.first <= i - k) {
-      deque.removeAt(0);
-    }
-
-    while (deque.isNotEmpty && nums[deque.last] <= nums[i]) {
-      deque.removeLast();
-    }
-
-    deque.add(i);
-
-    if (i >= k - 1) {
-      result.add(nums[deque.first]);
-    }
-  }
-
-  return result;
-}
-```
-
-**Explain:** I remove indices that are outside the window. I also remove smaller values from the back because they can never become maximum while the current bigger value is present.
-
-**Complexity:** Simple Time `O(n * k)`. Optimized Time `O(n)`, Space `O(k)`.
+**Complexity:** Time `O(n)`, Space `O(1)`
 
 ---
 
-## Last-Minute Complexity Revision
+### 11.4 Longest Substring Without Repeating Characters
 
-- Single loop: `O(n)`
-- Nested loop over same array: usually `O(n^2)`
-- Binary search: `O(log n)`
-- Sorting: usually `O(n log n)`
-- HashMap/Set lookup: average `O(1)`
-- Recursion with two choices each step: usually `O(2^n)`
-- Stack/Queue push and pop: `O(1)`
+**Problem:** Find longest substring with all unique characters
 
-## How To Speak During Coding Round
+**Example:**
+```
+Input: "abcabcbb"
+Output: 3 (substring "abc")
 
-Use this simple sentence pattern:
+Input: "bbbbb"
+Output: 1 (substring "b")
 
-**"I will solve this using [technique]. I will maintain [variables/data structure]. I will scan [direction]. This gives time complexity [time] and space complexity [space]."**
+Input: "pwwkew"
+Output: 3 (substring "wke")
+```
 
-Example:
+**Dart Code:**
+```dart
+int lengthOfLongestSubstring(String s) {
+  final charIndex = <String, int>{};
+  int maxLength = 0;
+  int left = 0;
 
-**"I will solve Two Sum using a HashMap. I will store visited numbers with their indexes. For every number, I will check if target minus current number already exists. This gives O(n) time and O(n) space."**
+  for (int right = 0; right < s.length; right++) {
+    final ch = s[right];
+    
+    if (charIndex.containsKey(ch) && charIndex[ch]! >= left) {
+      left = charIndex[ch]! + 1;
+    }
+    
+    charIndex[ch] = right;
+    maxLength = max(maxLength, right - left + 1);
+  }
+
+  return maxLength;
+}
+
+int max(int a, int b) => a > b ? a : b;
+```
+
+**Complexity:** Time `O(n)`, Space `O(min(n, alphabet))`
+
+---
+
+## Interview Preparation Checklist
+
+- [ ] Understand the problem statement fully
+- [ ] Ask clarification questions (edge cases, constraints)
+- [ ] Draw examples before coding
+- [ ] Explain your approach before writing code
+- [ ] Code with clear variable names
+- [ ] Test with examples (including edge cases)
+- [ ] Analyze time and space complexity
+- [ ] Discuss optimizations if possible
+
+## Time Complexity Quick Reference
+
+| Operation | Complexity |
+|-----------|-----------|
+| Array access | O(1) |
+| Array search | O(n) |
+| Binary search | O(log n) |
+| Sorting | O(n log n) |
+| HashMap/Set lookup | O(1) average |
+| Two pointers | O(n) |
+| Nested loops | O(n²) |
+| Recursion (binary) | O(2^n) |
+
+## Common Interview Question Patterns
+
+### Two Pointer Pattern
+- Palindrome checking
+- Array reversal
+- Two sum / pair sum
+- Trapping rain water
+
+### Sliding Window Pattern
+- Longest substring problems
+- Subarray problems
+- Window-based iterations
+
+### HashMap/Set Pattern
+- Character frequency
+- Duplicate detection
+- Anagram checking
+
+### Stack Pattern
+- Balanced parentheses
+- Expression evaluation
+- Next greater element
+
+### Tree Pattern
+- Traversals (inorder, preorder, postorder)
+- Level order (BFS)
+- Path sum problems
+
+### DP Pattern
+- Fibonacci variants
+- Coin change
+- Longest subsequence
+
+---
+
+## Last-Minute Quick Tips
+
+1. **Time is valuable** → Choose simple, correct solution over perfect
+2. **Edge cases matter** → Empty array, single element, null values
+3. **Variable names** → Use meaningful names (`leftMax` not `lm`)
+4. **Explain as you code** → Talk through your logic
+5. **Test with examples** → Manually trace through your code
+6. **Optimize if needed** → But only if interviewer asks
+7. **Complexity statement** → Always mention both time AND space
+
+Good luck! Remember, practice makes perfect. Code regularly! 🚀
