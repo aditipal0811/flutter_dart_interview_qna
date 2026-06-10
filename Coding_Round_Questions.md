@@ -1456,6 +1456,15 @@ int max(int a, int b) => a > b ? a : b;
 - Coin change
 - Longest subsequence
 
+### Must Memorize
+- Bubble Sort ✅
+- Binary Search ✅
+- Reverse String ✅
+- Palindrome ✅
+- Factorial (loop + recursion) ✅
+- Frequency Map ✅
+- Missing Number ✅
+
 ---
 
 ## Last-Minute Quick Tips
