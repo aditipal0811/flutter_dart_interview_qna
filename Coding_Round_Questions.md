@@ -1464,6 +1464,7 @@ int max(int a, int b) => a > b ? a : b;
 - Factorial (loop + recursion) ✅
 - Frequency Map ✅
 - Missing Number ✅
+- Prime Number ✅
 
 ---
 
